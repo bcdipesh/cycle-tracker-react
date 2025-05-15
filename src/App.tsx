@@ -10,15 +10,17 @@ import { LogPeriodForm } from '@/components/log-period-form';
 
 function App() {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Welcome back</CardTitle>
-        <CardDescription>Log your period for this month.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <LogPeriodForm />
-      </CardContent>
-    </Card>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Welcome back</CardTitle>
+          <CardDescription>Log your period for this month.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <LogPeriodForm />
+        </CardContent>
+      </Card>
+    </>
   );
 }
 

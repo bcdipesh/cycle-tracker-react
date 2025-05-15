@@ -3,6 +3,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CalendarIcon } from 'lucide-react';
 
+import { useLocalStorage } from '@/hooks/useLocalstorage';
+
+import { cn, dateFormatter } from '@/lib/utils';
+import { Period } from '@/lib/types';
+
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -20,26 +25,27 @@ import {
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 
-import { cn, dateFormatter } from '@/lib/utils';
-
-const formSchema = z.object({
-  startDate: z.date(),
-  endDate: z.date(),
-});
-
 export function LogPeriodForm() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const [, setValue] = useLocalStorage();
+
+  const form = useForm<z.infer<typeof Period>>({
+    resolver: zodResolver(Period),
   });
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    const startDate = new Date(data.startDate).toISOString();
-    const endDate = new Date(data.endDate).toISOString();
-    console.log(
-      'Form submitted:',
-      new Date(startDate).toLocaleDateString('en-US'),
-      new Date(endDate).toLocaleDateString('en-US')
-    );
+  function onSubmit(data: z.infer<typeof Period>) {
+    const isValid = Period.safeParse(data);
+
+    if (!isValid.success) {
+      console.error('Invalid data', isValid.error);
+      form.reset();
+      return;
+    }
+
+    const newPeriod = {
+      startDate: new Date(data.startDate).toISOString(),
+      endDate: new Date(data.endDate).toISOString(),
+    };
+    setValue(newPeriod);
   }
 
   return (
@@ -76,7 +82,7 @@ export function LogPeriodForm() {
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
-                    selected={field.value}
+                    selected={field.value ? new Date(field.value) : undefined}
                     onSelect={field.onChange}
                     disabled={(date) =>
                       date > new Date() || date < new Date('1900-01-01')
@@ -121,7 +127,7 @@ export function LogPeriodForm() {
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
-                    selected={field.value}
+                    selected={field.value ? new Date(field.value) : undefined}
                     onSelect={field.onChange}
                     disabled={(date) =>
                       date > new Date() || date < new Date('1900-01-01')
