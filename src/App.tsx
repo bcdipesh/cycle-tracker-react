@@ -1,11 +1,23 @@
-import { Card, CardHeader } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from '@/components/ui/card';
+
+import { LogPeriodForm } from '@/components/log-period-form';
 
 function App() {
   return (
     <Card>
-      <CardHeader>Hello</CardHeader>
-      <Button>Hello again</Button>
+      <CardHeader>
+        <CardTitle>Welcome back</CardTitle>
+        <CardDescription>Log your period for this month.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <LogPeriodForm />
+      </CardContent>
     </Card>
   );
 }
