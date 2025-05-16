@@ -7,9 +7,10 @@ function readLocalStorage() {
   try {
     const item = window.localStorage.getItem('periodData');
     return item ? JSON.parse(item) : null;
-  } catch (error) {
-    console.error('Error reading localStorage', error);
-    return null;
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : 'Error reading localStorage';
+    throw new Error(message);
   }
 }
 
@@ -25,8 +26,10 @@ export function useLocalStorage() {
         window.localStorage.setItem('periodData', JSON.stringify(newValue));
         return newValue;
       });
-    } catch (error) {
-      console.error('Error setting localStorage', error);
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : 'Error setting localStorage';
+      throw new Error(message);
     }
   };
 

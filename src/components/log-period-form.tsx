@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CalendarIcon } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { useLocalStorage } from '@/hooks/useLocalstorage';
 
@@ -36,7 +37,7 @@ export function LogPeriodForm() {
     const isValid = Period.safeParse(data);
 
     if (!isValid.success) {
-      console.error('Invalid data', isValid.error);
+      toast.error('Period data can only be of date type. Please try again!');
       form.reset();
       return;
     }
@@ -45,7 +46,19 @@ export function LogPeriodForm() {
       startDate: new Date(data.startDate).toISOString(),
       endDate: new Date(data.endDate).toISOString(),
     };
-    setValue(newPeriod);
+
+    try {
+      setValue(newPeriod);
+      toast.success('Period data saved successfully!');
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Error saving period data. Please try again!';
+      toast.error(message);
+      form.reset();
+      return;
+    }
   }
 
   return (
