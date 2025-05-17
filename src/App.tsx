@@ -1,3 +1,5 @@
+import { usePeriodLogs } from '@/hooks/usePeriodLogs';
+
 import {
   Card,
   CardHeader,
@@ -5,10 +7,12 @@ import {
   CardDescription,
   CardContent,
 } from '@/components/ui/card';
-
 import { LogPeriodForm } from '@/components/log-period-form';
+import { PeriodLogs } from '@/components/period-logs';
 
 function App() {
+  const [periodLogs, addPeriodLog] = usePeriodLogs();
+
   return (
     <>
       <Card>
@@ -17,9 +21,11 @@ function App() {
           <CardDescription>Log your period for this month.</CardDescription>
         </CardHeader>
         <CardContent>
-          <LogPeriodForm />
+          <LogPeriodForm addPeriodLog={addPeriodLog} />
         </CardContent>
       </Card>
+
+      <PeriodLogs periodLogs={periodLogs} />
     </>
   );
 }

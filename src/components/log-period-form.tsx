@@ -4,8 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { CalendarIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { useLocalStorage } from '@/hooks/useLocalstorage';
-
 import { cn, dateFormatter } from '@/lib/utils';
 import { Period } from '@/lib/types';
 
@@ -26,15 +24,18 @@ import {
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 
-export function LogPeriodForm() {
-  const [, setValue] = useLocalStorage();
-
-  const form = useForm<z.infer<typeof Period>>({
-    resolver: zodResolver(Period),
+export function LogPeriodForm({
+  addPeriodLog,
+}: {
+  addPeriodLog: (period: z.infer<typeof Period>) => void;
+}) {
+  const PeriodLogWithoutId = Period.omit({ id: true });
+  const form = useForm<z.infer<typeof PeriodLogWithoutId>>({
+    resolver: zodResolver(PeriodLogWithoutId),
   });
 
-  function onSubmit(data: z.infer<typeof Period>) {
-    const isValid = Period.safeParse(data);
+  function onSubmit(data: z.infer<typeof PeriodLogWithoutId>) {
+    const isValid = PeriodLogWithoutId.safeParse(data);
 
     if (!isValid.success) {
       toast.error('Period data can only be of date type. Please try again!');
@@ -42,13 +43,14 @@ export function LogPeriodForm() {
       return;
     }
 
-    const newPeriod = {
+    const newPeriodLog = {
+      id: crypto.randomUUID(),
       startDate: new Date(data.startDate).toISOString(),
       endDate: new Date(data.endDate).toISOString(),
     };
 
     try {
-      setValue(newPeriod);
+      addPeriodLog(newPeriodLog);
       toast.success('Period data saved successfully!');
     } catch (error: unknown) {
       const message =
@@ -80,7 +82,7 @@ export function LogPeriodForm() {
                       variant={'outline'}
                       className={cn(
                         'w-[240px] pl-3 text-left font-normal',
-                        !field.value && 'text-muted-foreground'
+                        !field.value && 'text-muted-foreground',
                       )}
                     >
                       {field.value ? (
@@ -125,7 +127,7 @@ export function LogPeriodForm() {
                       variant={'outline'}
                       className={cn(
                         'w-[240px] pl-3 text-left font-normal',
-                        !field.value && 'text-muted-foreground'
+                        !field.value && 'text-muted-foreground',
                       )}
                     >
                       {field.value ? (
