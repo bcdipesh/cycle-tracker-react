@@ -1,9 +1,12 @@
-import type { z } from 'zod';
-import { useState } from 'react';
-import { Trash2Icon } from 'lucide-react';
+import { z } from 'zod';
+import { Period } from '@/lib/types';
+import { useState, useRef } from 'react';
+import { Trash2Icon, ArrowUpDownIcon, EllipsisIcon } from 'lucide-react';
+import { toast } from 'sonner';
+
+import type { UUID } from 'crypto';
 
 import { dateFormatter } from '@/lib/utils';
-import { Period } from '@/lib/types';
 
 import {
   Card,
@@ -21,13 +24,32 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 export function PeriodLogs({
   periodLogs,
+  deletePeriodLog,
 }: {
   periodLogs: z.infer<typeof Period>[] | null;
+  deletePeriodLog: (id: UUID) => void;
 }) {
   const [sortOrder, setSortOrder] = useState('recent');
+  const cancelBtnRef = useRef<HTMLButtonElement>(null);
   let sortedPeriods = periodLogs ?? [];
   let htmlOutput: React.ReactNode;
 
@@ -69,9 +91,75 @@ export function PeriodLogs({
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <h3>{formattedStartDate}</h3>
-                    <Button variant="destructive" size="icon">
-                      <Trash2Icon />
-                    </Button>
+                    <Dialog>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            aria-label="Actions"
+                          >
+                            <EllipsisIcon />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DialogTrigger asChild>
+                            <DropdownMenuItem>
+                              <Trash2Icon className="mr-2 h-4 w-4" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DialogTrigger>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+
+                      <DialogContent
+                        onOpenAutoFocus={(event) => {
+                          event.preventDefault();
+                          cancelBtnRef.current?.focus();
+                        }}
+                      >
+                        <DialogHeader>
+                          <DialogTitle>Delete?</DialogTitle>
+                          <DialogDescription>
+                            Are you sure you want to delete this period log for{' '}
+                            {formattedStartDate}?
+                            <br />
+                            <br />
+                            <em>This action cannot be undone.</em>
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter className="flex justify-end">
+                          <Button
+                            variant="destructive"
+                            onClick={() => {
+                              try {
+                                deletePeriodLog(id as UUID);
+                                toast.success(
+                                  'Period data deleted successfully!',
+                                );
+                              } catch (error: unknown) {
+                                const message =
+                                  error instanceof Error
+                                    ? error.message
+                                    : 'Error deleting period data. Please try again!';
+                                toast.error(message);
+                              }
+                            }}
+                          >
+                            Delete
+                          </Button>
+                          <DialogClose asChild>
+                            <Button
+                              ref={cancelBtnRef}
+                              variant="outline"
+                              className="mr-2"
+                            >
+                              Cancel
+                            </Button>
+                          </DialogClose>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -109,14 +197,16 @@ export function PeriodLogs({
         onValueChange={(value) => setSortOrder(value)}
         defaultValue={sortOrder}
       >
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Sort peroids" />
+        <SelectTrigger className="w-[280px]">
+          <ArrowUpDownIcon />
+          <p>Sort by: </p>
+          <SelectValue placeholder="Sort by" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="recent" defaultChecked>
-            Recent
+            Date (Recent to Oldest)
           </SelectItem>
-          <SelectItem value="oldest">Oldest</SelectItem>
+          <SelectItem value="oldest">Date (Oldest to Recent)</SelectItem>
         </SelectContent>
       </Select>
 

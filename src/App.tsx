@@ -11,7 +11,7 @@ import { LogPeriodForm } from '@/components/log-period-form';
 import { PeriodLogs } from '@/components/period-logs';
 
 function App() {
-  const [periodLogs, addPeriodLog] = usePeriodLogs();
+  const [periodLogs, addPeriodLog, deletePeriodLog] = usePeriodLogs();
 
   return (
     <>
@@ -25,7 +25,7 @@ function App() {
         </CardContent>
       </Card>
 
-      <PeriodLogs periodLogs={periodLogs} />
+      <PeriodLogs periodLogs={periodLogs} deletePeriodLog={deletePeriodLog} />
     </>
   );
 }
