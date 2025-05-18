@@ -1,11 +1,8 @@
-import { z } from 'zod';
-import { Period } from '@/lib/types';
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { Trash2Icon, ArrowUpDownIcon, EllipsisIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
-import type { UUID } from 'crypto';
-
+import { type PeriodLog } from '@/lib/types';
 import { dateFormatter } from '@/lib/utils';
 
 import {
@@ -45,37 +42,37 @@ export function PeriodLogs({
   periodLogs,
   deletePeriodLog,
 }: {
-  periodLogs: z.infer<typeof Period>[] | null;
-  deletePeriodLog: (id: UUID) => void;
+  periodLogs: PeriodLog[];
+  deletePeriodLog: (id: string) => void;
 }) {
   const [sortOrder, setSortOrder] = useState('recent');
-  const cancelBtnRef = useRef<HTMLButtonElement>(null);
-  let sortedPeriods = periodLogs ?? [];
+  const sortedPeriods = [...periodLogs];
   let htmlOutput: React.ReactNode;
 
-  if (!periodLogs) {
+  if (periodLogs.length === 0) {
     htmlOutput = (
       <Card>
         <CardHeader>
           <CardTitle>
-            <h3>
-              No period data logged yet to display. Start logging your period
-              data using the form above.
-            </h3>
+            <h3>Empty Logs</h3>
           </CardTitle>
+          <CardDescription>
+            <p>
+              There is no available period logs to display. Start logging your
+              period data using the form above.
+            </p>
+          </CardDescription>
         </CardHeader>
       </Card>
     );
   } else {
     if (sortOrder === 'oldest') {
-      sortedPeriods = sortedPeriods.sort(
-        (a, b) =>
-          new Date(a.startDate).getTime() - new Date(b.startDate).getTime(),
+      sortedPeriods.sort(
+        (a, b) => a.startDate.getTime() - b.startDate.getTime(),
       );
     } else {
-      sortedPeriods = sortedPeriods.sort(
-        (a, b) =>
-          new Date(b.startDate).getTime() - new Date(a.startDate).getTime(),
+      sortedPeriods.sort(
+        (a, b) => b.startDate.getTime() - a.startDate.getTime(),
       );
     }
 
@@ -83,8 +80,8 @@ export function PeriodLogs({
       <ScrollArea className="h-[400px] rounded-xl border p-4 shadow-sm">
         <section className="flex flex-col gap-4">
           {sortedPeriods.map(({ id, startDate, endDate }) => {
-            const formattedStartDate = dateFormatter(new Date(startDate));
-            const formattedEndDate = dateFormatter(new Date(endDate));
+            const formattedStartDate = dateFormatter(startDate);
+            const formattedEndDate = dateFormatter(endDate);
 
             return (
               <Card key={id}>
@@ -112,12 +109,7 @@ export function PeriodLogs({
                         </DropdownMenuContent>
                       </DropdownMenu>
 
-                      <DialogContent
-                        onOpenAutoFocus={(event) => {
-                          event.preventDefault();
-                          cancelBtnRef.current?.focus();
-                        }}
-                      >
+                      <DialogContent>
                         <DialogHeader>
                           <DialogTitle>Delete?</DialogTitle>
                           <DialogDescription>
@@ -125,7 +117,7 @@ export function PeriodLogs({
                             {formattedStartDate}?
                             <br />
                             <br />
-                            <em>This action cannot be undone.</em>
+                            <em>Note: This action cannot be undone.</em>
                           </DialogDescription>
                         </DialogHeader>
                         <DialogFooter className="flex justify-end">
@@ -133,7 +125,7 @@ export function PeriodLogs({
                             variant="destructive"
                             onClick={() => {
                               try {
-                                deletePeriodLog(id as UUID);
+                                deletePeriodLog(id);
                                 toast.success(
                                   'Period data deleted successfully!',
                                 );
@@ -149,11 +141,7 @@ export function PeriodLogs({
                             Delete
                           </Button>
                           <DialogClose asChild>
-                            <Button
-                              ref={cancelBtnRef}
-                              variant="outline"
-                              className="mr-2"
-                            >
+                            <Button variant="outline" className="mr-2">
                               Cancel
                             </Button>
                           </DialogClose>
@@ -164,10 +152,14 @@ export function PeriodLogs({
                 </CardHeader>
                 <CardContent>
                   <CardDescription>
-                    {`Start Date: ${formattedStartDate}`}
-                  </CardDescription>
-                  <CardDescription>
-                    {`End Date: ${formattedEndDate}`}
+                    <p>
+                      <span className="font-bold">Started on: </span>
+                      {`${formattedStartDate}`}
+                    </p>
+                    <p>
+                      <span className="font-bold">Ended on: </span>
+                      {`${formattedEndDate}`}
+                    </p>
                   </CardDescription>
                 </CardContent>
               </Card>

@@ -1,29 +1,31 @@
-import { useState } from 'react';
-import { z } from 'zod';
+import { useState, useCallback } from 'react';
 
-import type { UUID } from 'crypto';
-import { Period } from '@/lib/types';
+import { type PeriodLog } from '@/lib/types';
 
-function getStoredPeriodLogs() {
+function getStoredPeriodLogs(): PeriodLog[] {
   try {
     const item = window.localStorage.getItem('periodLogs');
-    return item ? JSON.parse(item) : null;
+    const parsedItem = item ? JSON.parse(item) : [];
+
+    return parsedItem.map((periodLog: PeriodLog) => ({
+      ...periodLog,
+      startDate: new Date(periodLog.startDate),
+      endDate: new Date(periodLog.endDate),
+    }));
   } catch (error: unknown) {
-    const message =
-      error instanceof Error ? error.message : 'Error reading localStorage';
-    throw new Error(message);
+    console.error('Error retrieving period data:', error);
+    return [];
   }
 }
 
 export function usePeriodLogs() {
-  const [periodLogs, setPeriodLogs] = useState<z.infer<typeof Period>[] | null>(
-    getStoredPeriodLogs,
-  );
+  const [periodLogs, setPeriodLogs] =
+    useState<PeriodLog[]>(getStoredPeriodLogs);
 
-  const addPeriodLog = (periodLog: z.infer<typeof Period>) => {
+  const addPeriodLog = useCallback((periodLog: PeriodLog) => {
     setPeriodLogs((prevLogs) => {
       try {
-        const updatedPeriodLogs = [...(prevLogs ?? []), periodLog];
+        const updatedPeriodLogs = [...prevLogs, periodLog];
         window.localStorage.setItem(
           'periodLogs',
           JSON.stringify(updatedPeriodLogs),
@@ -31,19 +33,14 @@ export function usePeriodLogs() {
 
         return updatedPeriodLogs;
       } catch (error: unknown) {
-        const message =
-          error instanceof Error
-            ? error.message
-            : 'Error saving period data to localStorage';
-        throw new Error(message);
+        console.error('Error saving period data:', error);
+        return prevLogs;
       }
     });
-  };
+  }, []);
 
-  const deletePeriodLog = (id: UUID) => {
+  const deletePeriodLog = useCallback((id: string) => {
     setPeriodLogs((prevLogs) => {
-      if (!prevLogs) return null;
-
       try {
         const updatedPeriodLogs = prevLogs.filter((log) => log.id !== id);
         window.localStorage.setItem(
@@ -53,14 +50,11 @@ export function usePeriodLogs() {
 
         return updatedPeriodLogs;
       } catch (error: unknown) {
-        const message =
-          error instanceof Error
-            ? error.message
-            : 'Error saving period data to localStorage';
-        throw new Error(message);
+        console.error('Error deleting period data:', error);
+        return prevLogs;
       }
     });
-  };
+  }, []);
 
   return [periodLogs, addPeriodLog, deletePeriodLog] as const;
 }

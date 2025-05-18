@@ -5,7 +5,7 @@ import { CalendarIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { cn, dateFormatter } from '@/lib/utils';
-import { Period } from '@/lib/types';
+import { type PeriodLog, LogPeriodFormSchema } from '@/lib/types';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -27,26 +27,17 @@ import { Calendar } from '@/components/ui/calendar';
 export function LogPeriodForm({
   addPeriodLog,
 }: {
-  addPeriodLog: (period: z.infer<typeof Period>) => void;
+  addPeriodLog: (periodLog: PeriodLog) => void;
 }) {
-  const PeriodLogWithoutId = Period.omit({ id: true });
-  const form = useForm<z.infer<typeof PeriodLogWithoutId>>({
-    resolver: zodResolver(PeriodLogWithoutId),
+  const form = useForm<z.infer<typeof LogPeriodFormSchema>>({
+    resolver: zodResolver(LogPeriodFormSchema),
   });
 
-  function onSubmit(data: z.infer<typeof PeriodLogWithoutId>) {
-    const isValid = PeriodLogWithoutId.safeParse(data);
-
-    if (!isValid.success) {
-      toast.error('Period data can only be of date type. Please try again!');
-      form.reset();
-      return;
-    }
-
+  function onSubmit(data: z.infer<typeof LogPeriodFormSchema>) {
     const newPeriodLog = {
       id: crypto.randomUUID(),
-      startDate: new Date(data.startDate).toISOString(),
-      endDate: new Date(data.endDate).toISOString(),
+      startDate: new Date(data.startDate),
+      endDate: new Date(data.endDate),
     };
 
     try {
@@ -86,7 +77,7 @@ export function LogPeriodForm({
                       )}
                     >
                       {field.value ? (
-                        dateFormatter(new Date(field.value))
+                        dateFormatter(field.value)
                       ) : (
                         <span>Pick a date</span>
                       )}
@@ -97,7 +88,7 @@ export function LogPeriodForm({
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
-                    selected={field.value ? new Date(field.value) : undefined}
+                    selected={field.value}
                     onSelect={field.onChange}
                     disabled={(date) =>
                       date > new Date() || date < new Date('1900-01-01')
@@ -106,7 +97,6 @@ export function LogPeriodForm({
                   />
                 </PopoverContent>
               </Popover>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -131,7 +121,7 @@ export function LogPeriodForm({
                       )}
                     >
                       {field.value ? (
-                        dateFormatter(new Date(field.value))
+                        dateFormatter(field.value)
                       ) : (
                         <span>Pick a date</span>
                       )}
@@ -142,7 +132,7 @@ export function LogPeriodForm({
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
-                    selected={field.value ? new Date(field.value) : undefined}
+                    selected={field.value}
                     onSelect={field.onChange}
                     disabled={(date) =>
                       date > new Date() || date < new Date('1900-01-01')
