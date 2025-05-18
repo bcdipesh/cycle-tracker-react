@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Trash2Icon, ArrowUpDownIcon, EllipsisIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -46,7 +46,17 @@ export function PeriodLogs({
   deletePeriodLog: (id: string) => void;
 }) {
   const [sortOrder, setSortOrder] = useState('recent');
-  const sortedPeriods = [...periodLogs];
+  const sortedPeriods = useMemo(() => {
+    const currPeriodLogs = [...periodLogs];
+
+    return sortOrder === 'oldest'
+      ? currPeriodLogs.sort(
+          (a, b) => a.startDate.getTime() - b.startDate.getTime(),
+        )
+      : currPeriodLogs.sort(
+          (a, b) => b.startDate.getTime() - a.startDate.getTime(),
+        );
+  }, [periodLogs, sortOrder]);
   let htmlOutput: React.ReactNode;
 
   if (periodLogs.length === 0) {
@@ -66,16 +76,6 @@ export function PeriodLogs({
       </Card>
     );
   } else {
-    if (sortOrder === 'oldest') {
-      sortedPeriods.sort(
-        (a, b) => a.startDate.getTime() - b.startDate.getTime(),
-      );
-    } else {
-      sortedPeriods.sort(
-        (a, b) => b.startDate.getTime() - a.startDate.getTime(),
-      );
-    }
-
     htmlOutput = (
       <ScrollArea className="h-[400px] rounded-xl border p-4 shadow-sm">
         <section className="flex flex-col gap-4">
