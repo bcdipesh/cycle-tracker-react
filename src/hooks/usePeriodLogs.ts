@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 
 import { type PeriodLog } from '@/lib/types';
+import { sortPeriods } from '@/lib/utils';
 
 function getStoredPeriodLogs(): PeriodLog[] {
   try {
@@ -25,7 +26,7 @@ export function usePeriodLogs() {
   const addPeriodLog = useCallback((periodLog: PeriodLog) => {
     setPeriodLogs((prevLogs) => {
       try {
-        const updatedPeriodLogs = [...prevLogs, periodLog];
+        const updatedPeriodLogs = sortPeriods([...prevLogs, periodLog]);
         window.localStorage.setItem(
           'periodLogs',
           JSON.stringify(updatedPeriodLogs),
@@ -42,7 +43,9 @@ export function usePeriodLogs() {
   const deletePeriodLog = useCallback((id: string) => {
     setPeriodLogs((prevLogs) => {
       try {
-        const updatedPeriodLogs = prevLogs.filter((log) => log.id !== id);
+        const updatedPeriodLogs = sortPeriods(
+          prevLogs.filter((log) => log.id !== id),
+        );
         window.localStorage.setItem(
           'periodLogs',
           JSON.stringify(updatedPeriodLogs),

@@ -1,4 +1,8 @@
+import { useState } from 'react';
+
 import { usePeriodLogs } from '@/hooks/usePeriodLogs';
+
+import type { SortOrder } from '@/lib/types';
 
 import {
   Card,
@@ -7,10 +11,13 @@ import {
   CardDescription,
   CardContent,
 } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LogPeriodForm } from '@/components/log-period-form';
 import { PeriodLogs } from '@/components/period-logs';
+import { PeriodStats } from '@/components/period-stats';
 
 function App() {
+  const [sortOrder, setSortOrder] = useState<SortOrder>('recent');
   const [periodLogs, addPeriodLog, deletePeriodLog] = usePeriodLogs();
 
   return (
@@ -25,7 +32,23 @@ function App() {
         </CardContent>
       </Card>
 
-      <PeriodLogs periodLogs={periodLogs} deletePeriodLog={deletePeriodLog} />
+      <Tabs defaultValue="logs" className="w-full">
+        <TabsList>
+          <TabsTrigger value="logs">Logs</TabsTrigger>
+          <TabsTrigger value="stats">Stats</TabsTrigger>
+        </TabsList>
+        <TabsContent value="logs">
+          <PeriodLogs
+            periodLogs={periodLogs}
+            deletePeriodLog={deletePeriodLog}
+            sortOrder={sortOrder}
+            setSortOrder={setSortOrder}
+          />
+        </TabsContent>
+        <TabsContent value="stats">
+          <PeriodStats periodLogs={periodLogs} />
+        </TabsContent>
+      </Tabs>
     </>
   );
 }

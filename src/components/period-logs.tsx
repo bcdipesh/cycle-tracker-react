@@ -1,9 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Trash2Icon, ArrowUpDownIcon, EllipsisIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { type PeriodLog } from '@/lib/types';
-import { dateFormatter } from '@/lib/utils';
+import { dateFormatter, sortPeriods } from '@/lib/utils';
 
 import {
   Card,
@@ -38,25 +38,25 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 
+type SortOrder = 'recent' | 'oldest';
+
 export function PeriodLogs({
   periodLogs,
   deletePeriodLog,
+  sortOrder,
+  setSortOrder,
 }: {
   periodLogs: PeriodLog[];
   deletePeriodLog: (id: string) => void;
+  sortOrder: SortOrder;
+  setSortOrder: (value: SortOrder) => void;
 }) {
-  const [sortOrder, setSortOrder] = useState('recent');
-  const sortedPeriods = useMemo(() => {
-    const currPeriodLogs = [...periodLogs];
+  const sortedPeriods = useMemo(
+    () =>
+      sortOrder === 'oldest' ? periodLogs : sortPeriods(periodLogs, 'desc'),
+    [periodLogs, sortOrder],
+  );
 
-    return sortOrder === 'oldest'
-      ? currPeriodLogs.sort(
-          (a, b) => a.startDate.getTime() - b.startDate.getTime(),
-        )
-      : currPeriodLogs.sort(
-          (a, b) => b.startDate.getTime() - a.startDate.getTime(),
-        );
-  }, [periodLogs, sortOrder]);
   let htmlOutput: React.ReactNode;
 
   if (periodLogs.length === 0) {
@@ -172,11 +172,11 @@ export function PeriodLogs({
 
   return (
     <section
-      aria-labelledby="period-logs-title"
+      aria-labelledby="period-logs-heading"
       className="flex flex-col gap-2"
     >
       <header>
-        <h2 id="period-logs-title" className="text-xl font-bold">
+        <h2 id="period-logs-heading" className="text-xl font-bold">
           Period Logs
         </h2>
         <p className="text-muted-foreground">
@@ -186,7 +186,7 @@ export function PeriodLogs({
       </header>
 
       <Select
-        onValueChange={(value) => setSortOrder(value)}
+        onValueChange={(value: SortOrder) => setSortOrder(value)}
         defaultValue={sortOrder}
       >
         <SelectTrigger className="w-[280px]">

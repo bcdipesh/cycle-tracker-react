@@ -17,3 +17,4 @@ export const PeriodLogSchema = z.object({
 });
 
 export type PeriodLog = z.infer<typeof PeriodLogSchema>;
+export type SortOrder = 'recent' | 'oldest';
