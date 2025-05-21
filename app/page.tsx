@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import { usePeriodLogs } from '@/hooks/usePeriodLogs';
 
@@ -21,20 +21,6 @@ import { PeriodStats } from '@/components/period-stats';
 export default function HomePage() {
   const [sortOrder, setSortOrder] = useState<SortOrder>('recent');
   const [periodLogs, addPeriodLog, deletePeriodLog] = usePeriodLogs();
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Set loading to false after hydration
-  useEffect(() => {
-    setIsLoading(false);
-  }, []);
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <p className="text-muted-foreground">Loading...</p>
-      </div>
-    );
-  }
 
   return (
     <>
