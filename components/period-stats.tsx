@@ -1,3 +1,5 @@
+'use client';
+
 import { type PeriodLog } from '@/lib/types';
 import { dateFormatter } from '@/lib/utils';
 
@@ -13,12 +15,12 @@ function getDifferenceInDays(startDate: Date, endDate: Date) {
   const startUtc = Date.UTC(
     startDate.getFullYear(),
     startDate.getMonth(),
-    startDate.getDate(),
+    startDate.getDate()
   );
   const endUtc = Date.UTC(
     endDate.getFullYear(),
     endDate.getMonth(),
-    endDate.getDate(),
+    endDate.getDate()
   );
 
   return (startUtc - endUtc) / (1000 * 60 * 60 * 24);
@@ -34,7 +36,7 @@ function calculateAvgCycleLength(periodLogs: PeriodLog[]) {
 
     totalDays += getDifferenceInDays(
       currPeriod.startDate,
-      prevPeriod.startDate,
+      prevPeriod.startDate
     );
   }
 

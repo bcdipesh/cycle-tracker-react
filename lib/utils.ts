@@ -19,7 +19,7 @@ export function dateFormatter(date: Date) {
 
 export function sortPeriods(
   periodLogs: PeriodLog[],
-  sortIn: 'asc' | 'desc' = 'asc',
+  sortIn: 'asc' | 'desc' = 'asc'
 ) {
   if (periodLogs.length === 0) return periodLogs;
 

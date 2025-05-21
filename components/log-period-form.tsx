@@ -1,3 +1,5 @@
+'use client';
+
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -73,7 +75,7 @@ export function LogPeriodForm({
                       variant={'outline'}
                       className={cn(
                         'pl-3 text-left font-normal',
-                        !field.value && 'text-muted-foreground',
+                        !field.value && 'text-muted-foreground'
                       )}
                     >
                       {field.value ? (
@@ -117,7 +119,7 @@ export function LogPeriodForm({
                       variant={'outline'}
                       className={cn(
                         'pl-3 text-left font-normal',
-                        !field.value && 'text-muted-foreground',
+                        !field.value && 'text-muted-foreground'
                       )}
                     >
                       {field.value ? (

@@ -1,4 +1,6 @@
-import { useState, useCallback } from 'react';
+'use client';
+
+import { useState, useCallback, useEffect } from 'react';
 
 import { type PeriodLog } from '@/lib/types';
 import { sortPeriods } from '@/lib/utils';
@@ -20,8 +22,11 @@ function getStoredPeriodLogs(): PeriodLog[] {
 }
 
 export function usePeriodLogs() {
-  const [periodLogs, setPeriodLogs] =
-    useState<PeriodLog[]>(getStoredPeriodLogs);
+  const [periodLogs, setPeriodLogs] = useState<PeriodLog[]>([]);
+
+  useEffect(() => {
+    setPeriodLogs(getStoredPeriodLogs());
+  }, []);
 
   const addPeriodLog = useCallback((periodLog: PeriodLog) => {
     setPeriodLogs((prevLogs) => {
@@ -29,7 +34,7 @@ export function usePeriodLogs() {
         const updatedPeriodLogs = sortPeriods([...prevLogs, periodLog]);
         window.localStorage.setItem(
           'periodLogs',
-          JSON.stringify(updatedPeriodLogs),
+          JSON.stringify(updatedPeriodLogs)
         );
 
         return updatedPeriodLogs;
@@ -44,11 +49,11 @@ export function usePeriodLogs() {
     setPeriodLogs((prevLogs) => {
       try {
         const updatedPeriodLogs = sortPeriods(
-          prevLogs.filter((log) => log.id !== id),
+          prevLogs.filter((log) => log.id !== id)
         );
         window.localStorage.setItem(
           'periodLogs',
-          JSON.stringify(updatedPeriodLogs),
+          JSON.stringify(updatedPeriodLogs)
         );
 
         return updatedPeriodLogs;

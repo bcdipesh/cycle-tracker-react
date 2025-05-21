@@ -1,3 +1,5 @@
+'use client';
+
 import { useMemo } from 'react';
 import { Trash2Icon, ArrowUpDownIcon, EllipsisIcon } from 'lucide-react';
 import { toast } from 'sonner';
@@ -54,7 +56,7 @@ export function PeriodLogs({
   const sortedPeriods = useMemo(
     () =>
       sortOrder === 'oldest' ? periodLogs : sortPeriods(periodLogs, 'desc'),
-    [periodLogs, sortOrder],
+    [periodLogs, sortOrder]
   );
 
   let htmlOutput: React.ReactNode;
@@ -127,7 +129,7 @@ export function PeriodLogs({
                               try {
                                 deletePeriodLog(id);
                                 toast.success(
-                                  'Period data deleted successfully!',
+                                  'Period data deleted successfully!'
                                 );
                               } catch (error: unknown) {
                                 const message =
