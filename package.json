@@ -33,6 +33,7 @@
     "react-hook-form": "^7.56.4",
     "sonner": "^2.0.3",
     "tailwind-merge": "^3.3.0",
+    "tailwindcss-animate": "^1.0.7",
     "zod": "^3.25.7"
   },
   "devDependencies": {
@@ -40,6 +41,8 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "prettier": "^3.5.3",
+    "prettier-plugin-tailwindcss": "^0.6.11",
     "prisma": "^6.8.2",
     "tailwindcss": "^4",
     "tsx": "^4.19.4",
