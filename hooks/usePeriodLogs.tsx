@@ -1,68 +1,56 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 
 import { type PeriodLog } from '@/lib/types';
-import { sortPeriods } from '@/lib/utils';
-
-function getStoredPeriodLogs(): PeriodLog[] {
-  try {
-    const item = window.localStorage.getItem('periodLogs');
-    const parsedItem = item ? JSON.parse(item) : [];
-
-    return parsedItem.map((periodLog: PeriodLog) => ({
-      ...periodLog,
-      startDate: new Date(periodLog.startDate),
-      endDate: new Date(periodLog.endDate),
-    }));
-  } catch (error: unknown) {
-    console.error('Error retrieving period data:', error);
-    return [];
-  }
-}
+import {
+  getPeriodLogs,
+  createPeriodLog,
+  deletePeriodLog as deletePeriodLogAction,
+} from '@/lib/actions';
 
 export function usePeriodLogs() {
   const [periodLogs, setPeriodLogs] = useState<PeriodLog[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setPeriodLogs(getStoredPeriodLogs());
-  }, []);
-
-  const addPeriodLog = useCallback((periodLog: PeriodLog) => {
-    setPeriodLogs((prevLogs) => {
+    async function loadPeriodLogs() {
       try {
-        const updatedPeriodLogs = sortPeriods([...prevLogs, periodLog]);
-        window.localStorage.setItem(
-          'periodLogs',
-          JSON.stringify(updatedPeriodLogs)
-        );
-
-        return updatedPeriodLogs;
-      } catch (error: unknown) {
-        console.error('Error saving period data:', error);
-        return prevLogs;
+        const logs = await getPeriodLogs();
+        setPeriodLogs(logs);
+      } catch (error) {
+        console.error('Error loading period logs:', error);
+        toast.error('Failed to load period logs');
+      } finally {
+        setIsLoading(false);
       }
-    });
+    }
+
+    loadPeriodLogs();
   }, []);
 
-  const deletePeriodLog = useCallback((id: string) => {
-    setPeriodLogs((prevLogs) => {
-      try {
-        const updatedPeriodLogs = sortPeriods(
-          prevLogs.filter((log) => log.id !== id)
-        );
-        window.localStorage.setItem(
-          'periodLogs',
-          JSON.stringify(updatedPeriodLogs)
-        );
+  const addPeriodLog = async (periodLog: PeriodLog) => {
+    try {
+      const { startDate, endDate } = periodLog;
+      const newLog = await createPeriodLog({ startDate, endDate });
+      setPeriodLogs((prevLogs) => [newLog, ...prevLogs]);
+      return newLog;
+    } catch (error) {
+      console.error('Error adding period log:', error);
+      throw new Error('Failed to add period log');
+    }
+  };
 
-        return updatedPeriodLogs;
-      } catch (error: unknown) {
-        console.error('Error deleting period data:', error);
-        return prevLogs;
-      }
-    });
-  }, []);
+  const deletePeriodLog = async (id: string) => {
+    try {
+      await deletePeriodLogAction(id);
+      setPeriodLogs((prevLogs) => prevLogs.filter((log) => log.id !== id));
+    } catch (error) {
+      console.error('Error deleting period log:', error);
+      throw new Error('Failed to delete period log');
+    }
+  };
 
-  return [periodLogs, addPeriodLog, deletePeriodLog] as const;
+  return [periodLogs, addPeriodLog, deletePeriodLog, isLoading] as const;
 }

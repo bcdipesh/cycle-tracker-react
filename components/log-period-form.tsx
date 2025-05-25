@@ -10,6 +10,7 @@ import { cn, dateFormatter } from '@/lib/utils';
 import { type PeriodLog, LogPeriodFormSchema } from '@/lib/types';
 
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Form,
   FormControl,
@@ -24,36 +25,39 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
 
 export function LogPeriodForm({
-  addPeriodLog,
+  addPeriodLogAction,
 }: {
-  addPeriodLog: (periodLog: PeriodLog) => void;
+  addPeriodLogAction: (
+    data: Omit<PeriodLog, 'id' | 'endDate'> &
+      Partial<Pick<PeriodLog, 'endDate'>>
+  ) => Promise<PeriodLog | { error: string }>;
 }) {
   const form = useForm<z.infer<typeof LogPeriodFormSchema>>({
     resolver: zodResolver(LogPeriodFormSchema),
   });
+  const { isSubmitting } = form.formState;
 
-  function onSubmit(data: z.infer<typeof LogPeriodFormSchema>) {
+  async function onSubmit(data: z.infer<typeof LogPeriodFormSchema>) {
     const newPeriodLog = {
-      id: crypto.randomUUID(),
       startDate: new Date(data.startDate),
       endDate: new Date(data.endDate),
     };
 
-    try {
-      addPeriodLog(newPeriodLog);
-      toast.success('Period data saved successfully!');
-    } catch (error: unknown) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Error saving period data. Please try again!';
-      toast.error(message);
-      form.reset();
-      return;
+    const toastId = toast.loading('Saving period data...');
+    const result = await addPeriodLogAction(newPeriodLog);
+
+    if ('error' in result) {
+      toast.error(result.error);
+    } else {
+      toast.success(
+        `Period from ${dateFormatter(result.startDate)} to ${dateFormatter(
+          result.endDate
+        )} has been logged.`
+      );
     }
+    toast.dismiss(toastId);
   }
 
   return (
@@ -148,7 +152,9 @@ export function LogPeriodForm({
           )}
         />
 
-        <Button type="submit">Log Period</Button>
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Logging period...' : 'Log Period'}
+        </Button>
       </form>
     </Form>
   );

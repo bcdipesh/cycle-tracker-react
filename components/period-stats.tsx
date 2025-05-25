@@ -1,7 +1,7 @@
-'use client';
+import { useMemo } from 'react';
 
-import { type PeriodLog } from '@/lib/types';
-import { dateFormatter } from '@/lib/utils';
+import type { PeriodLog } from '@/lib/types';
+import { dateFormatter, sortPeriods } from '@/lib/utils';
 
 import {
   Card,
@@ -43,9 +43,21 @@ function calculateAvgCycleLength(periodLogs: PeriodLog[]) {
   return totalDays / (periodLogs.length - 1);
 }
 
-export function PeriodStats({ periodLogs }: { periodLogs: PeriodLog[] }) {
-  const avgCycleLength = calculateAvgCycleLength(periodLogs);
-  const lastPeriod = periodLogs[periodLogs.length - 1];
+export function PeriodStats({
+  periodLogs,
+}: {
+  periodLogs: PeriodLog[] | { error: string };
+}) {
+  const sortedPeriodLogs = useMemo(() => {
+    if ('error' in periodLogs) {
+      return [];
+    }
+
+    return sortPeriods(periodLogs, 'desc');
+  }, [periodLogs]);
+
+  const avgCycleLength = calculateAvgCycleLength(sortedPeriodLogs);
+  const lastPeriod = sortedPeriodLogs[sortedPeriodLogs.length - 1];
   const nextExpectedPeriod =
     avgCycleLength !== 0
       ? lastPeriod.startDate.getTime() + avgCycleLength * 24 * 60 * 60 * 1000
@@ -68,7 +80,7 @@ export function PeriodStats({ periodLogs }: { periodLogs: PeriodLog[] }) {
         </p>
       </header>
 
-      <section className="flex flex-col gap-4">
+      <section className="flex flex-col gap-4 rounded-xl border p-4 shadow-sm">
         <Card>
           <CardHeader>
             <CardTitle>Average Cycle Length</CardTitle>

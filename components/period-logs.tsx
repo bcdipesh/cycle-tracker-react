@@ -1,12 +1,13 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Trash2Icon, ArrowUpDownIcon, EllipsisIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { type PeriodLog } from '@/lib/types';
+import type { PeriodLog, SortOrder } from '@/lib/types';
 import { dateFormatter, sortPeriods } from '@/lib/utils';
 
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardHeader,
@@ -14,21 +15,6 @@ import {
   CardDescription,
   CardContent,
 } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import {
   Dialog,
   DialogClose,
@@ -39,29 +25,61 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-
-type SortOrder = 'recent' | 'oldest';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export function PeriodLogs({
-  periodLogs,
-  deletePeriodLog,
-  sortOrder,
+  sortOrder = 'recent',
   setSortOrder,
+  periodLogs,
+  deletePeriodLogAction,
 }: {
-  periodLogs: PeriodLog[];
-  deletePeriodLog: (id: string) => void;
   sortOrder: SortOrder;
   setSortOrder: (value: SortOrder) => void;
+  periodLogs: PeriodLog[] | { error: string };
+  deletePeriodLogAction: (id: string) => Promise<void | { error: string }>;
 }) {
-  const sortedPeriods = useMemo(
-    () =>
-      sortOrder === 'oldest' ? periodLogs : sortPeriods(periodLogs, 'desc'),
-    [periodLogs, sortOrder]
-  );
+  const [sortedPeriods, setSortedPeriods] = useState<PeriodLog[]>([]);
+
+  async function deletePeriodLog(id: string) {
+    const toastId = toast.loading('Deleting period data...');
+    const result = await deletePeriodLogAction(id);
+
+    if (result?.error) {
+      toast.error(result.error);
+    } else {
+      toast.success('Period data deleted successfully!');
+    }
+    toast.dismiss(toastId);
+  }
+
+  useEffect(() => {
+    if ('error' in periodLogs) {
+      toast.error(periodLogs.error);
+    } else {
+      if (sortOrder === 'recent') {
+        setSortedPeriods(sortPeriods(periodLogs, 'desc'));
+      } else {
+        setSortedPeriods(sortPeriods(periodLogs, 'asc'));
+      }
+    }
+  }, [periodLogs, sortOrder]);
 
   let htmlOutput: React.ReactNode;
 
-  if (periodLogs.length === 0) {
+  if (sortedPeriods.length === 0) {
     htmlOutput = (
       <Card>
         <CardHeader>
@@ -125,20 +143,7 @@ export function PeriodLogs({
                         <DialogFooter className="flex justify-end">
                           <Button
                             variant="destructive"
-                            onClick={() => {
-                              try {
-                                deletePeriodLog(id);
-                                toast.success(
-                                  'Period data deleted successfully!'
-                                );
-                              } catch (error: unknown) {
-                                const message =
-                                  error instanceof Error
-                                    ? error.message
-                                    : 'Error deleting period data. Please try again!';
-                                toast.error(message);
-                              }
-                            }}
+                            onClick={() => deletePeriodLog(id)}
                           >
                             Delete
                           </Button>

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
+import { ClerkProvider } from '@clerk/nextjs';
 
 import { Toaster } from '@/components/ui/sonner';
 
@@ -17,8 +18,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Cycle Tracker',
-  description: 'A simple cycle tracker app',
+  title: 'Period Cycle Tracker',
+  description: 'A simple period cycle tracking application',
   authors: [
     {
       name: 'Dipesh B C',
@@ -40,25 +41,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <header className="p-4">
-            <h1 className="text-center text-2xl font-bold">Cycle Tracker</h1>
-          </header>
-          <main className="mx-auto mt-4 flex max-w-xl flex-col gap-4 p-4">
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
             {children}
-          </main>
-          <Toaster position="top-right" richColors />
-        </ThemeProvider>
-      </body>
-    </html>
+            <Toaster position="top-right" richColors />
+          </ThemeProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
