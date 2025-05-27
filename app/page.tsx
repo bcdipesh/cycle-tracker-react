@@ -13,7 +13,7 @@ import { Logo } from "@/components/logo";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-purple-50">
+    <>
       {/* Header */}
       <header className="container mx-auto max-w-6xl px-4 py-6">
         <div className="flex items-center justify-between">
@@ -186,6 +186,6 @@ export default function HomePage() {
           </p>
         </div>
       </footer>
-    </div>
+    </>
   );
 }

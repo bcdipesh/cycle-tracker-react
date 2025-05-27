@@ -3,21 +3,11 @@ import { SignUp } from "@clerk/nextjs";
 import { ArrowLeftIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/logo";
-import { Separator } from "@/components/ui/separator";
 
 export default function Page() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-rose-50 via-white to-purple-50 p-4">
+    <main className="flex min-h-screen items-center justify-center">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="mb-8 flex items-center">
@@ -30,7 +20,7 @@ export default function Page() {
           <Logo />
         </div>
 
-        {/* Sign-in/up form */}
+        {/* Sign-up form */}
         <SignUp />
 
         {/* Terms of service */}

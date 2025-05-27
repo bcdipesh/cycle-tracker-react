@@ -43,11 +43,25 @@ export namespace $Enums {
 
 export type Flow = (typeof Flow)[keyof typeof Flow]
 
+
+export const TrackingGoal: {
+  GENERAL: 'GENERAL',
+  CONCEPTION: 'CONCEPTION',
+  CONTRACEPTION: 'CONTRACEPTION',
+  HEALTH: 'HEALTH'
+};
+
+export type TrackingGoal = (typeof TrackingGoal)[keyof typeof TrackingGoal]
+
 }
 
 export type Flow = $Enums.Flow
 
 export const Flow: typeof $Enums.Flow
+
+export type TrackingGoal = $Enums.TrackingGoal
+
+export const TrackingGoal: typeof $Enums.TrackingGoal
 
 /**
  * ##  Prisma Client ʲˢ
@@ -1117,6 +1131,7 @@ export namespace Prisma {
     email: string | null
     firstName: string | null
     lastName: string | null
+    onboardingCompleted: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1127,6 +1142,7 @@ export namespace Prisma {
     email: string | null
     firstName: string | null
     lastName: string | null
+    onboardingCompleted: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1137,6 +1153,7 @@ export namespace Prisma {
     email: number
     firstName: number
     lastName: number
+    onboardingCompleted: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -1149,6 +1166,7 @@ export namespace Prisma {
     email?: true
     firstName?: true
     lastName?: true
+    onboardingCompleted?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1159,6 +1177,7 @@ export namespace Prisma {
     email?: true
     firstName?: true
     lastName?: true
+    onboardingCompleted?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1169,6 +1188,7 @@ export namespace Prisma {
     email?: true
     firstName?: true
     lastName?: true
+    onboardingCompleted?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -1252,6 +1272,7 @@ export namespace Prisma {
     email: string
     firstName: string | null
     lastName: string | null
+    onboardingCompleted: boolean
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
@@ -1279,6 +1300,7 @@ export namespace Prisma {
     email?: boolean
     firstName?: boolean
     lastName?: boolean
+    onboardingCompleted?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     periods?: boolean | User$periodsArgs<ExtArgs>
@@ -1292,6 +1314,7 @@ export namespace Prisma {
     email?: boolean
     firstName?: boolean
     lastName?: boolean
+    onboardingCompleted?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -1302,6 +1325,7 @@ export namespace Prisma {
     email?: boolean
     firstName?: boolean
     lastName?: boolean
+    onboardingCompleted?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -1312,11 +1336,12 @@ export namespace Prisma {
     email?: boolean
     firstName?: boolean
     lastName?: boolean
+    onboardingCompleted?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "clerkId" | "email" | "firstName" | "lastName" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "clerkId" | "email" | "firstName" | "lastName" | "onboardingCompleted" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     periods?: boolean | User$periodsArgs<ExtArgs>
     UserSettings?: boolean | User$UserSettingsArgs<ExtArgs>
@@ -1337,6 +1362,7 @@ export namespace Prisma {
       email: string
       firstName: string | null
       lastName: string | null
+      onboardingCompleted: boolean
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["user"]>
@@ -1769,6 +1795,7 @@ export namespace Prisma {
     readonly email: FieldRef<"User", 'String'>
     readonly firstName: FieldRef<"User", 'String'>
     readonly lastName: FieldRef<"User", 'String'>
+    readonly onboardingCompleted: FieldRef<"User", 'Boolean'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
   }
@@ -3387,11 +3414,13 @@ export namespace Prisma {
 
   export type UserSettingsAvgAggregateOutputType = {
     averageCycleLength: number | null
+    averagePeriodLength: number | null
     reminderDaysBefore: number | null
   }
 
   export type UserSettingsSumAggregateOutputType = {
     averageCycleLength: number | null
+    averagePeriodLength: number | null
     reminderDaysBefore: number | null
   }
 
@@ -3399,35 +3428,43 @@ export namespace Prisma {
     id: string | null
     userId: string | null
     averageCycleLength: number | null
+    averagePeriodLength: number | null
     reminderDaysBefore: number | null
     enableNotifications: boolean | null
+    trackingGoal: $Enums.TrackingGoal | null
   }
 
   export type UserSettingsMaxAggregateOutputType = {
     id: string | null
     userId: string | null
     averageCycleLength: number | null
+    averagePeriodLength: number | null
     reminderDaysBefore: number | null
     enableNotifications: boolean | null
+    trackingGoal: $Enums.TrackingGoal | null
   }
 
   export type UserSettingsCountAggregateOutputType = {
     id: number
     userId: number
     averageCycleLength: number
+    averagePeriodLength: number
     reminderDaysBefore: number
     enableNotifications: number
+    trackingGoal: number
     _all: number
   }
 
 
   export type UserSettingsAvgAggregateInputType = {
     averageCycleLength?: true
+    averagePeriodLength?: true
     reminderDaysBefore?: true
   }
 
   export type UserSettingsSumAggregateInputType = {
     averageCycleLength?: true
+    averagePeriodLength?: true
     reminderDaysBefore?: true
   }
 
@@ -3435,24 +3472,30 @@ export namespace Prisma {
     id?: true
     userId?: true
     averageCycleLength?: true
+    averagePeriodLength?: true
     reminderDaysBefore?: true
     enableNotifications?: true
+    trackingGoal?: true
   }
 
   export type UserSettingsMaxAggregateInputType = {
     id?: true
     userId?: true
     averageCycleLength?: true
+    averagePeriodLength?: true
     reminderDaysBefore?: true
     enableNotifications?: true
+    trackingGoal?: true
   }
 
   export type UserSettingsCountAggregateInputType = {
     id?: true
     userId?: true
     averageCycleLength?: true
+    averagePeriodLength?: true
     reminderDaysBefore?: true
     enableNotifications?: true
+    trackingGoal?: true
     _all?: true
   }
 
@@ -3546,8 +3589,10 @@ export namespace Prisma {
     id: string
     userId: string
     averageCycleLength: number
+    averagePeriodLength: number
     reminderDaysBefore: number
     enableNotifications: boolean
+    trackingGoal: $Enums.TrackingGoal
     _count: UserSettingsCountAggregateOutputType | null
     _avg: UserSettingsAvgAggregateOutputType | null
     _sum: UserSettingsSumAggregateOutputType | null
@@ -3573,8 +3618,10 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     averageCycleLength?: boolean
+    averagePeriodLength?: boolean
     reminderDaysBefore?: boolean
     enableNotifications?: boolean
+    trackingGoal?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userSettings"]>
 
@@ -3582,8 +3629,10 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     averageCycleLength?: boolean
+    averagePeriodLength?: boolean
     reminderDaysBefore?: boolean
     enableNotifications?: boolean
+    trackingGoal?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userSettings"]>
 
@@ -3591,8 +3640,10 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     averageCycleLength?: boolean
+    averagePeriodLength?: boolean
     reminderDaysBefore?: boolean
     enableNotifications?: boolean
+    trackingGoal?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userSettings"]>
 
@@ -3600,11 +3651,13 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     averageCycleLength?: boolean
+    averagePeriodLength?: boolean
     reminderDaysBefore?: boolean
     enableNotifications?: boolean
+    trackingGoal?: boolean
   }
 
-  export type UserSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "averageCycleLength" | "reminderDaysBefore" | "enableNotifications", ExtArgs["result"]["userSettings"]>
+  export type UserSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "averageCycleLength" | "averagePeriodLength" | "reminderDaysBefore" | "enableNotifications" | "trackingGoal", ExtArgs["result"]["userSettings"]>
   export type UserSettingsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -3624,8 +3677,10 @@ export namespace Prisma {
       id: string
       userId: string
       averageCycleLength: number
+      averagePeriodLength: number
       reminderDaysBefore: number
       enableNotifications: boolean
+      trackingGoal: $Enums.TrackingGoal
     }, ExtArgs["result"]["userSettings"]>
     composites: {}
   }
@@ -4053,8 +4108,10 @@ export namespace Prisma {
     readonly id: FieldRef<"UserSettings", 'String'>
     readonly userId: FieldRef<"UserSettings", 'String'>
     readonly averageCycleLength: FieldRef<"UserSettings", 'Int'>
+    readonly averagePeriodLength: FieldRef<"UserSettings", 'Int'>
     readonly reminderDaysBefore: FieldRef<"UserSettings", 'Int'>
     readonly enableNotifications: FieldRef<"UserSettings", 'Boolean'>
+    readonly trackingGoal: FieldRef<"UserSettings", 'TrackingGoal'>
   }
     
 
@@ -4489,6 +4546,7 @@ export namespace Prisma {
     email: 'email',
     firstName: 'firstName',
     lastName: 'lastName',
+    onboardingCompleted: 'onboardingCompleted',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -4516,8 +4574,10 @@ export namespace Prisma {
     id: 'id',
     userId: 'userId',
     averageCycleLength: 'averageCycleLength',
+    averagePeriodLength: 'averagePeriodLength',
     reminderDaysBefore: 'reminderDaysBefore',
-    enableNotifications: 'enableNotifications'
+    enableNotifications: 'enableNotifications',
+    trackingGoal: 'trackingGoal'
   };
 
   export type UserSettingsScalarFieldEnum = (typeof UserSettingsScalarFieldEnum)[keyof typeof UserSettingsScalarFieldEnum]
@@ -4567,6 +4627,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -4609,9 +4676,16 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Boolean'
+   * Reference to a field of type 'TrackingGoal'
    */
-  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+  export type EnumTrackingGoalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TrackingGoal'>
+    
+
+
+  /**
+   * Reference to a field of type 'TrackingGoal[]'
+   */
+  export type ListEnumTrackingGoalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TrackingGoal[]'>
     
 
 
@@ -4641,6 +4715,7 @@ export namespace Prisma {
     email?: StringFilter<"User"> | string
     firstName?: StringNullableFilter<"User"> | string | null
     lastName?: StringNullableFilter<"User"> | string | null
+    onboardingCompleted?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     periods?: PeriodListRelationFilter
@@ -4653,6 +4728,7 @@ export namespace Prisma {
     email?: SortOrder
     firstName?: SortOrderInput | SortOrder
     lastName?: SortOrderInput | SortOrder
+    onboardingCompleted?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     periods?: PeriodOrderByRelationAggregateInput
@@ -4668,6 +4744,7 @@ export namespace Prisma {
     NOT?: UserWhereInput | UserWhereInput[]
     firstName?: StringNullableFilter<"User"> | string | null
     lastName?: StringNullableFilter<"User"> | string | null
+    onboardingCompleted?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     periods?: PeriodListRelationFilter
@@ -4680,6 +4757,7 @@ export namespace Prisma {
     email?: SortOrder
     firstName?: SortOrderInput | SortOrder
     lastName?: SortOrderInput | SortOrder
+    onboardingCompleted?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -4696,6 +4774,7 @@ export namespace Prisma {
     email?: StringWithAggregatesFilter<"User"> | string
     firstName?: StringNullableWithAggregatesFilter<"User"> | string | null
     lastName?: StringNullableWithAggregatesFilter<"User"> | string | null
+    onboardingCompleted?: BoolWithAggregatesFilter<"User"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
@@ -4789,8 +4868,10 @@ export namespace Prisma {
     id?: StringFilter<"UserSettings"> | string
     userId?: StringFilter<"UserSettings"> | string
     averageCycleLength?: IntFilter<"UserSettings"> | number
+    averagePeriodLength?: IntFilter<"UserSettings"> | number
     reminderDaysBefore?: IntFilter<"UserSettings"> | number
     enableNotifications?: BoolFilter<"UserSettings"> | boolean
+    trackingGoal?: EnumTrackingGoalFilter<"UserSettings"> | $Enums.TrackingGoal
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
@@ -4798,8 +4879,10 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     averageCycleLength?: SortOrder
+    averagePeriodLength?: SortOrder
     reminderDaysBefore?: SortOrder
     enableNotifications?: SortOrder
+    trackingGoal?: SortOrder
     user?: UserOrderByWithRelationInput
   }
 
@@ -4810,8 +4893,10 @@ export namespace Prisma {
     OR?: UserSettingsWhereInput[]
     NOT?: UserSettingsWhereInput | UserSettingsWhereInput[]
     averageCycleLength?: IntFilter<"UserSettings"> | number
+    averagePeriodLength?: IntFilter<"UserSettings"> | number
     reminderDaysBefore?: IntFilter<"UserSettings"> | number
     enableNotifications?: BoolFilter<"UserSettings"> | boolean
+    trackingGoal?: EnumTrackingGoalFilter<"UserSettings"> | $Enums.TrackingGoal
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id" | "userId">
 
@@ -4819,8 +4904,10 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     averageCycleLength?: SortOrder
+    averagePeriodLength?: SortOrder
     reminderDaysBefore?: SortOrder
     enableNotifications?: SortOrder
+    trackingGoal?: SortOrder
     _count?: UserSettingsCountOrderByAggregateInput
     _avg?: UserSettingsAvgOrderByAggregateInput
     _max?: UserSettingsMaxOrderByAggregateInput
@@ -4835,8 +4922,10 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"UserSettings"> | string
     userId?: StringWithAggregatesFilter<"UserSettings"> | string
     averageCycleLength?: IntWithAggregatesFilter<"UserSettings"> | number
+    averagePeriodLength?: IntWithAggregatesFilter<"UserSettings"> | number
     reminderDaysBefore?: IntWithAggregatesFilter<"UserSettings"> | number
     enableNotifications?: BoolWithAggregatesFilter<"UserSettings"> | boolean
+    trackingGoal?: EnumTrackingGoalWithAggregatesFilter<"UserSettings"> | $Enums.TrackingGoal
   }
 
   export type UserCreateInput = {
@@ -4845,6 +4934,7 @@ export namespace Prisma {
     email: string
     firstName?: string | null
     lastName?: string | null
+    onboardingCompleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     periods?: PeriodCreateNestedManyWithoutUserInput
@@ -4857,6 +4947,7 @@ export namespace Prisma {
     email: string
     firstName?: string | null
     lastName?: string | null
+    onboardingCompleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     periods?: PeriodUncheckedCreateNestedManyWithoutUserInput
@@ -4869,6 +4960,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     periods?: PeriodUpdateManyWithoutUserNestedInput
@@ -4881,6 +4973,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     periods?: PeriodUncheckedUpdateManyWithoutUserNestedInput
@@ -4893,6 +4986,7 @@ export namespace Prisma {
     email: string
     firstName?: string | null
     lastName?: string | null
+    onboardingCompleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -4903,6 +4997,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -4913,6 +5008,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -5010,8 +5106,10 @@ export namespace Prisma {
   export type UserSettingsCreateInput = {
     id?: string
     averageCycleLength?: number
+    averagePeriodLength?: number
     reminderDaysBefore?: number
     enableNotifications?: boolean
+    trackingGoal?: $Enums.TrackingGoal
     user: UserCreateNestedOneWithoutUserSettingsInput
   }
 
@@ -5019,15 +5117,19 @@ export namespace Prisma {
     id?: string
     userId: string
     averageCycleLength?: number
+    averagePeriodLength?: number
     reminderDaysBefore?: number
     enableNotifications?: boolean
+    trackingGoal?: $Enums.TrackingGoal
   }
 
   export type UserSettingsUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     averageCycleLength?: IntFieldUpdateOperationsInput | number
+    averagePeriodLength?: IntFieldUpdateOperationsInput | number
     reminderDaysBefore?: IntFieldUpdateOperationsInput | number
     enableNotifications?: BoolFieldUpdateOperationsInput | boolean
+    trackingGoal?: EnumTrackingGoalFieldUpdateOperationsInput | $Enums.TrackingGoal
     user?: UserUpdateOneRequiredWithoutUserSettingsNestedInput
   }
 
@@ -5035,31 +5137,39 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     averageCycleLength?: IntFieldUpdateOperationsInput | number
+    averagePeriodLength?: IntFieldUpdateOperationsInput | number
     reminderDaysBefore?: IntFieldUpdateOperationsInput | number
     enableNotifications?: BoolFieldUpdateOperationsInput | boolean
+    trackingGoal?: EnumTrackingGoalFieldUpdateOperationsInput | $Enums.TrackingGoal
   }
 
   export type UserSettingsCreateManyInput = {
     id?: string
     userId: string
     averageCycleLength?: number
+    averagePeriodLength?: number
     reminderDaysBefore?: number
     enableNotifications?: boolean
+    trackingGoal?: $Enums.TrackingGoal
   }
 
   export type UserSettingsUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     averageCycleLength?: IntFieldUpdateOperationsInput | number
+    averagePeriodLength?: IntFieldUpdateOperationsInput | number
     reminderDaysBefore?: IntFieldUpdateOperationsInput | number
     enableNotifications?: BoolFieldUpdateOperationsInput | boolean
+    trackingGoal?: EnumTrackingGoalFieldUpdateOperationsInput | $Enums.TrackingGoal
   }
 
   export type UserSettingsUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     averageCycleLength?: IntFieldUpdateOperationsInput | number
+    averagePeriodLength?: IntFieldUpdateOperationsInput | number
     reminderDaysBefore?: IntFieldUpdateOperationsInput | number
     enableNotifications?: BoolFieldUpdateOperationsInput | boolean
+    trackingGoal?: EnumTrackingGoalFieldUpdateOperationsInput | $Enums.TrackingGoal
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -5090,6 +5200,11 @@ export namespace Prisma {
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     mode?: QueryMode
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type DateTimeFilter<$PrismaModel = never> = {
@@ -5129,6 +5244,7 @@ export namespace Prisma {
     email?: SortOrder
     firstName?: SortOrder
     lastName?: SortOrder
+    onboardingCompleted?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -5139,6 +5255,7 @@ export namespace Prisma {
     email?: SortOrder
     firstName?: SortOrder
     lastName?: SortOrder
+    onboardingCompleted?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -5149,6 +5266,7 @@ export namespace Prisma {
     email?: SortOrder
     firstName?: SortOrder
     lastName?: SortOrder
+    onboardingCompleted?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -5187,6 +5305,14 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -5341,21 +5467,26 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
+  export type EnumTrackingGoalFilter<$PrismaModel = never> = {
+    equals?: $Enums.TrackingGoal | EnumTrackingGoalFieldRefInput<$PrismaModel>
+    in?: $Enums.TrackingGoal[] | ListEnumTrackingGoalFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TrackingGoal[] | ListEnumTrackingGoalFieldRefInput<$PrismaModel>
+    not?: NestedEnumTrackingGoalFilter<$PrismaModel> | $Enums.TrackingGoal
   }
 
   export type UserSettingsCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     averageCycleLength?: SortOrder
+    averagePeriodLength?: SortOrder
     reminderDaysBefore?: SortOrder
     enableNotifications?: SortOrder
+    trackingGoal?: SortOrder
   }
 
   export type UserSettingsAvgOrderByAggregateInput = {
     averageCycleLength?: SortOrder
+    averagePeriodLength?: SortOrder
     reminderDaysBefore?: SortOrder
   }
 
@@ -5363,20 +5494,25 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     averageCycleLength?: SortOrder
+    averagePeriodLength?: SortOrder
     reminderDaysBefore?: SortOrder
     enableNotifications?: SortOrder
+    trackingGoal?: SortOrder
   }
 
   export type UserSettingsMinOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     averageCycleLength?: SortOrder
+    averagePeriodLength?: SortOrder
     reminderDaysBefore?: SortOrder
     enableNotifications?: SortOrder
+    trackingGoal?: SortOrder
   }
 
   export type UserSettingsSumOrderByAggregateInput = {
     averageCycleLength?: SortOrder
+    averagePeriodLength?: SortOrder
     reminderDaysBefore?: SortOrder
   }
 
@@ -5396,12 +5532,14 @@ export namespace Prisma {
     _max?: NestedIntFilter<$PrismaModel>
   }
 
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+  export type EnumTrackingGoalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TrackingGoal | EnumTrackingGoalFieldRefInput<$PrismaModel>
+    in?: $Enums.TrackingGoal[] | ListEnumTrackingGoalFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TrackingGoal[] | ListEnumTrackingGoalFieldRefInput<$PrismaModel>
+    not?: NestedEnumTrackingGoalWithAggregatesFilter<$PrismaModel> | $Enums.TrackingGoal
     _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
+    _min?: NestedEnumTrackingGoalFilter<$PrismaModel>
+    _max?: NestedEnumTrackingGoalFilter<$PrismaModel>
   }
 
   export type PeriodCreateNestedManyWithoutUserInput = {
@@ -5436,6 +5574,10 @@ export namespace Prisma {
 
   export type NullableStringFieldUpdateOperationsInput = {
     set?: string | null
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
   }
 
   export type DateTimeFieldUpdateOperationsInput = {
@@ -5543,8 +5685,8 @@ export namespace Prisma {
     divide?: number
   }
 
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
+  export type EnumTrackingGoalFieldUpdateOperationsInput = {
+    set?: $Enums.TrackingGoal
   }
 
   export type UserUpdateOneRequiredWithoutUserSettingsNestedInput = {
@@ -5581,6 +5723,11 @@ export namespace Prisma {
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type NestedDateTimeFilter<$PrismaModel = never> = {
@@ -5648,6 +5795,14 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -5733,9 +5888,11 @@ export namespace Prisma {
     _max?: NestedEnumFlowNullableFilter<$PrismaModel>
   }
 
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
+  export type NestedEnumTrackingGoalFilter<$PrismaModel = never> = {
+    equals?: $Enums.TrackingGoal | EnumTrackingGoalFieldRefInput<$PrismaModel>
+    in?: $Enums.TrackingGoal[] | ListEnumTrackingGoalFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TrackingGoal[] | ListEnumTrackingGoalFieldRefInput<$PrismaModel>
+    not?: NestedEnumTrackingGoalFilter<$PrismaModel> | $Enums.TrackingGoal
   }
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
@@ -5765,12 +5922,14 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+  export type NestedEnumTrackingGoalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TrackingGoal | EnumTrackingGoalFieldRefInput<$PrismaModel>
+    in?: $Enums.TrackingGoal[] | ListEnumTrackingGoalFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TrackingGoal[] | ListEnumTrackingGoalFieldRefInput<$PrismaModel>
+    not?: NestedEnumTrackingGoalWithAggregatesFilter<$PrismaModel> | $Enums.TrackingGoal
     _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
+    _min?: NestedEnumTrackingGoalFilter<$PrismaModel>
+    _max?: NestedEnumTrackingGoalFilter<$PrismaModel>
   }
 
   export type PeriodCreateWithoutUserInput = {
@@ -5810,15 +5969,19 @@ export namespace Prisma {
   export type UserSettingsCreateWithoutUserInput = {
     id?: string
     averageCycleLength?: number
+    averagePeriodLength?: number
     reminderDaysBefore?: number
     enableNotifications?: boolean
+    trackingGoal?: $Enums.TrackingGoal
   }
 
   export type UserSettingsUncheckedCreateWithoutUserInput = {
     id?: string
     averageCycleLength?: number
+    averagePeriodLength?: number
     reminderDaysBefore?: number
     enableNotifications?: boolean
+    trackingGoal?: $Enums.TrackingGoal
   }
 
   export type UserSettingsCreateOrConnectWithoutUserInput = {
@@ -5872,15 +6035,19 @@ export namespace Prisma {
   export type UserSettingsUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     averageCycleLength?: IntFieldUpdateOperationsInput | number
+    averagePeriodLength?: IntFieldUpdateOperationsInput | number
     reminderDaysBefore?: IntFieldUpdateOperationsInput | number
     enableNotifications?: BoolFieldUpdateOperationsInput | boolean
+    trackingGoal?: EnumTrackingGoalFieldUpdateOperationsInput | $Enums.TrackingGoal
   }
 
   export type UserSettingsUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     averageCycleLength?: IntFieldUpdateOperationsInput | number
+    averagePeriodLength?: IntFieldUpdateOperationsInput | number
     reminderDaysBefore?: IntFieldUpdateOperationsInput | number
     enableNotifications?: BoolFieldUpdateOperationsInput | boolean
+    trackingGoal?: EnumTrackingGoalFieldUpdateOperationsInput | $Enums.TrackingGoal
   }
 
   export type UserCreateWithoutPeriodsInput = {
@@ -5889,6 +6056,7 @@ export namespace Prisma {
     email: string
     firstName?: string | null
     lastName?: string | null
+    onboardingCompleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     UserSettings?: UserSettingsCreateNestedOneWithoutUserInput
@@ -5900,6 +6068,7 @@ export namespace Prisma {
     email: string
     firstName?: string | null
     lastName?: string | null
+    onboardingCompleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     UserSettings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
@@ -5927,6 +6096,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     UserSettings?: UserSettingsUpdateOneWithoutUserNestedInput
@@ -5938,6 +6108,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     UserSettings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
@@ -5949,6 +6120,7 @@ export namespace Prisma {
     email: string
     firstName?: string | null
     lastName?: string | null
+    onboardingCompleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     periods?: PeriodCreateNestedManyWithoutUserInput
@@ -5960,6 +6132,7 @@ export namespace Prisma {
     email: string
     firstName?: string | null
     lastName?: string | null
+    onboardingCompleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     periods?: PeriodUncheckedCreateNestedManyWithoutUserInput
@@ -5987,6 +6160,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     periods?: PeriodUpdateManyWithoutUserNestedInput
@@ -5998,6 +6172,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     firstName?: NullableStringFieldUpdateOperationsInput | string | null
     lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     periods?: PeriodUncheckedUpdateManyWithoutUserNestedInput

@@ -126,6 +126,7 @@ exports.Prisma.UserScalarFieldEnum = {
   email: 'email',
   firstName: 'firstName',
   lastName: 'lastName',
+  onboardingCompleted: 'onboardingCompleted',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -147,8 +148,10 @@ exports.Prisma.UserSettingsScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   averageCycleLength: 'averageCycleLength',
+  averagePeriodLength: 'averagePeriodLength',
   reminderDaysBefore: 'reminderDaysBefore',
-  enableNotifications: 'enableNotifications'
+  enableNotifications: 'enableNotifications',
+  trackingGoal: 'trackingGoal'
 };
 
 exports.Prisma.SortOrder = {
@@ -171,6 +174,13 @@ exports.Flow = exports.$Enums.Flow = {
   LIGHT: 'LIGHT',
   MEDIUM: 'MEDIUM',
   HEAVY: 'HEAVY'
+};
+
+exports.TrackingGoal = exports.$Enums.TrackingGoal = {
+  GENERAL: 'GENERAL',
+  CONCEPTION: 'CONCEPTION',
+  CONTRACEPTION: 'CONTRACEPTION',
+  HEALTH: 'HEALTH'
 };
 
 exports.Prisma.ModelName = {

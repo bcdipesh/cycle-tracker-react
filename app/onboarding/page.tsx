@@ -1,15 +1,5 @@
-import { createUserAction } from "@/lib/actions";
+import { OnboardingForm } from "./_components/onboarding-form";
 
 export default async function OnboardingPage() {
-  const response = await createUserAction();
-
-  if (response?.success) {
-    console.log(response.success);
-  }
-
-  if (response?.error) {
-    console.log(response.error);
-  }
-
-  return <div>Onboarding</div>;
+  return <OnboardingForm />;
 }

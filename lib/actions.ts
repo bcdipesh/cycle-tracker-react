@@ -1,41 +1,101 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { auth, currentUser } from "@clerk/nextjs/server";
+import { UserSettings } from "@/app/generated/prisma";
 
 import prisma from "@/lib/db";
 
-export async function createUserAction() {
+export async function finishOnboardingAction(
+  data: Omit<UserSettings, "id" | "userId"> & { lastPeriodDate?: Date },
+) {
   const { userId } = await auth();
   const user = await currentUser();
 
-  if (userId && user) {
-    const existingUser = await prisma.user.findUnique({
-      where: { clerkId: userId },
+  // Check if user is authenticated
+  if (!userId || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  try {
+    // Check if user exists in database
+    let dbUser = await prisma.user.findUnique({
+      where: {
+        clerkId: userId,
+      },
     });
 
-    if (!existingUser) {
-      try {
-        await prisma.user.create({
-          data: {
-            clerkId: userId,
-            email: user.emailAddresses[0].emailAddress,
-            firstName: user.firstName,
-            lastName: user.lastName,
-          },
-        });
-
-        return {
-          success: "User created successfully.",
-        };
-      } catch (error) {
-        console.error("Error creating user:", error);
-        return {
-          error: "Failed to create user. Please try again.",
-        };
-      }
+    // If user doesn't exist, add a new user in the database
+    if (!dbUser) {
+      dbUser = await prisma.user.create({
+        data: {
+          clerkId: userId,
+          email: user.emailAddresses[0].emailAddress,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        },
+      });
     }
+
+    // Create a new user settings in the database
+    await prisma.userSettings.create({
+      data: {
+        userId: dbUser.id,
+        averageCycleLength: data.averageCycleLength,
+        averagePeriodLength: data.averagePeriodLength,
+        reminderDaysBefore: data.reminderDaysBefore,
+        enableNotifications: data.enableNotifications,
+        trackingGoal: data.trackingGoal,
+      },
+    });
+
+    // If lastPeriodDate is provided, create a new period log in the database
+    if (data.lastPeriodDate) {
+      await prisma.period.create({
+        data: {
+          userId: dbUser.id,
+          startDate: data.lastPeriodDate,
+        },
+      });
+    }
+
+    // Update the user's onboarding completed status
+    await prisma.user.update({
+      where: {
+        id: dbUser.id,
+      },
+      data: {
+        onboardingCompleted: true,
+      },
+    });
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.error("Error in onboarding:", error);
+    return {
+      success: false,
+      error: "Failed to save onboarding data.",
+    };
   }
+}
+
+export async function getUserAction() {
+  const { userId } = await auth();
+
+  // Check if user is authenticated
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+
+  // Get user from database
+  const user = await prisma.user.findUnique({
+    where: {
+      clerkId: userId,
+    },
+  });
+
+  return user;
 }
 
 // import { type PeriodLog } from '@/lib/types';
