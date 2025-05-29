@@ -37,7 +37,7 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="container mx-auto max-w-6xl px-4 py-16 text-center">
         <div className="mx-auto max-w-3xl">
-          <h1 className="mb-6 bg-gradient-to-r from-rose-600 to-purple-600 bg-clip-text text-4xl font-bold text-transparent md:text-6xl">
+          <h1 className="mb-6 bg-gradient-to-r from-rose-600 to-purple-600 bg-clip-text text-4xl font-bold text-transparent md:text-6xl dark:from-rose-400 dark:to-purple-400">
             Track Your Cycle with Confidence
           </h1>
           <p className="text-muted-foreground mb-8 text-xl leading-relaxed">
@@ -61,8 +61,8 @@ export default function HomePage() {
             <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-rose-400 to-purple-500 opacity-20 blur-lg"></div>
             <Card className="relative overflow-hidden rounded-3xl border-0 py-0 shadow-2xl">
               <CardContent className="p-0">
-                <div className="bg-gradient-to-br from-rose-100 to-purple-100 p-6">
-                  <div className="rounded-2xl bg-white p-4 shadow-sm">
+                <div className="bg-gradient-to-br from-rose-100 to-purple-100 p-6 dark:from-rose-950 dark:to-purple-950">
+                  <div className="dark:bg-background/30 rounded-2xl bg-white p-4 shadow-sm">
                     <div className="mb-4 flex items-center justify-between">
                       <h3 className="font-semibold">Current Cycle</h3>
                       <div className="h-6 w-6 rounded-full bg-rose-100"></div>
@@ -107,7 +107,7 @@ export default function HomePage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <Card className="border-0 p-6 text-center shadow-sm transition-shadow hover:shadow-md">
+          <Card className="border-0 p-6 text-center shadow-sm transition-shadow hover:shadow-md dark:bg-gradient-to-r dark:from-rose-950 dark:to-purple-950">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-rose-100">
               <CalendarIcon className="h-6 w-6 text-rose-600" />
             </div>
@@ -118,7 +118,7 @@ export default function HomePage() {
             </p>
           </Card>
 
-          <Card className="border-0 p-6 text-center shadow-sm transition-shadow hover:shadow-md">
+          <Card className="border-0 p-6 text-center shadow-sm transition-shadow hover:shadow-md dark:bg-gradient-to-r dark:from-rose-950 dark:to-purple-950">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-purple-100">
               <TrendingUpIcon className="h-6 w-6 text-purple-600" />
             </div>
@@ -129,7 +129,7 @@ export default function HomePage() {
             </p>
           </Card>
 
-          <Card className="border-0 p-6 text-center shadow-sm transition-shadow hover:shadow-md">
+          <Card className="border-0 p-6 text-center shadow-sm transition-shadow hover:shadow-md dark:bg-gradient-to-r dark:from-rose-950 dark:to-purple-950">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-rose-100">
               <ShieldIcon className="h-6 w-6 text-rose-600" />
             </div>
@@ -140,7 +140,7 @@ export default function HomePage() {
             </p>
           </Card>
 
-          <Card className="border-0 p-6 text-center shadow-sm transition-shadow hover:shadow-md">
+          <Card className="border-0 p-6 text-center shadow-sm transition-shadow hover:shadow-md dark:bg-gradient-to-r dark:from-rose-950 dark:to-purple-950">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-purple-100">
               <BellIcon className="h-6 w-6 text-purple-600" />
             </div>
@@ -155,7 +155,7 @@ export default function HomePage() {
 
       {/* CTA Section */}
       <section className="container mx-auto max-w-6xl px-4 py-16">
-        <Card className="border-0 bg-gradient-to-r from-rose-500 to-purple-600 text-white">
+        <Card className="border-0 bg-gradient-to-r from-rose-500 to-purple-600 text-white dark:from-rose-950 dark:to-purple-950">
           <CardContent className="p-12 text-center">
             <h2 className="mb-4 text-3xl font-bold">
               Ready to Take Control of Your Health?
@@ -165,7 +165,12 @@ export default function HomePage() {
               understand their bodies better. Start tracking today and discover
               patterns you never knew existed.
             </p>
-            <Button size="lg" variant="secondary" asChild>
+            <Button
+              size="lg"
+              variant="secondary"
+              className="dark:bg-input/30 dark:border-input dark:hover:bg-input/50"
+              asChild
+            >
               <Link href="/sign-up">Start Tracking Free</Link>
             </Button>
           </CardContent>

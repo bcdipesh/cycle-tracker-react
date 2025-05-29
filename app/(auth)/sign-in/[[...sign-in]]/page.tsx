@@ -1,16 +1,16 @@
 import Link from "next/link";
-import { SignIn } from "@clerk/nextjs";
 import { ArrowLeftIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
+import { SignInForm } from "./_components/sign-in";
 
 export default function Page() {
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <div className="w-full max-w-md">
+    <main className="mx-auto max-w-md">
+      <div className="flex min-h-screen flex-col items-center justify-center">
         {/* Header */}
-        <div className="mb-8 flex items-center">
+        <div className="mb-8 flex items-center self-start">
           <Link href="/">
             <Button variant="ghost" size="icon" className="mr-2">
               <ArrowLeftIcon className="h-5 w-5" />
@@ -21,7 +21,7 @@ export default function Page() {
         </div>
 
         {/* Sign-in form */}
-        <SignIn />
+        <SignInForm />
 
         {/* Terms of service */}
         <div className="text-muted-foreground mt-8 text-center text-xs">
