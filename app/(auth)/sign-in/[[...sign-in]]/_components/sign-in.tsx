@@ -13,12 +13,11 @@ export function SignInForm() {
         baseTheme: resolvedTheme === "dark" ? dark : undefined,
         elements: {
           cardBox:
-            "dark:bg-gradient-to-br from-rose-100 to-purple-100 p-6 dark:from-rose-950 dark:to-purple-950",
+            "dark:bg-gradient-to-br dark:from-rose-950 dark:to-purple-950",
           card: {
             background: "transparent",
             borderRadius: "0",
             boxShadow: "none",
-            padding: "2rem 1.5em",
           },
           formFieldInput: {
             backgroundColor:

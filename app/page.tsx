@@ -20,7 +20,22 @@ export default function HomePage() {
           <Logo />
           <div className="space-x-2">
             <SignedIn>
-              <UserButton />
+              <UserButton
+                appearance={{
+                  elements: {
+                    userButtonPopoverCard: "dark:text-white!",
+                    userButtonPopoverMain:
+                      "dark:bg-gradient-to-br dark:from-rose-950 dark:to-purple-950 rounded-none! dark:bg-inherit!",
+                    userButtonPopoverActionButton:
+                      "dark:text-white! dark:hover:bg-input/30!",
+                    userButtonPopoverFooter:
+                      "dark:bg-gradient-to-br! dark:from-rose-950! dark:to-purple-950! dark:**:text-white!",
+                  },
+                  layout: {
+                    unsafe_disableDevelopmentModeWarnings: true,
+                  },
+                }}
+              />
             </SignedIn>
             <SignedOut>
               <Button variant="ghost" asChild>
