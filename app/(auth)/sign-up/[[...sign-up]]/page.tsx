@@ -10,7 +10,7 @@ export default function Page() {
     <main className="mx-auto max-w-md">
       <div className="flex min-h-screen flex-col items-center justify-center">
         {/* Header */}
-        <div className="mb-8 flex items-center self-start">
+        <div className="mb-8 ml-4 flex items-center self-start">
           <Link href="/">
             <Button variant="ghost" size="icon" className="mr-2">
               <ArrowLeftIcon className="h-5 w-5" />
