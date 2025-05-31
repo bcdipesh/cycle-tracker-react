@@ -244,7 +244,7 @@ export function OnboardingForm() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4 text-center">
-              <div className="rounded-lg bg-gradient-to-r from-rose-50 to-purple-50 p-6">
+              <div className="rounded-lg bg-gradient-to-r from-rose-50 to-purple-50 p-6 dark:from-rose-950 dark:to-purple-950">
                 <h3 className="mb-2 font-semibold">What's next?</h3>
                 <ul className="text-muted-foreground space-y-1 text-sm">
                   <li>• Start logging your daily symptoms</li>
@@ -324,7 +324,7 @@ export function OnboardingForm() {
         </div>
 
         {/* Onboarding Form */}
-        <Card className="border-0 shadow-xl">
+        <Card className="relative border-0 shadow-xl dark:bg-gradient-to-br dark:from-rose-950 dark:via-gray-950 dark:to-gray-950">
           {currentStepHtml}
           <CardFooter className="flex flex-col gap-2">
             <Button

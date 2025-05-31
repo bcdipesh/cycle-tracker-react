@@ -122,7 +122,7 @@ export default function HomePage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <Card className="border-0 p-6 text-center shadow-sm transition-shadow hover:shadow-md dark:bg-gradient-to-r dark:from-rose-950 dark:to-purple-950">
+          <Card className="border-0 p-6 text-center shadow-sm transition-shadow hover:shadow-md dark:bg-gradient-to-br dark:from-rose-950 dark:via-gray-950 dark:to-gray-950">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-rose-100">
               <CalendarIcon className="h-6 w-6 text-rose-600" />
             </div>
@@ -133,7 +133,7 @@ export default function HomePage() {
             </p>
           </Card>
 
-          <Card className="border-0 p-6 text-center shadow-sm transition-shadow hover:shadow-md dark:bg-gradient-to-r dark:from-rose-950 dark:to-purple-950">
+          <Card className="border-0 p-6 text-center shadow-sm transition-shadow hover:shadow-md dark:bg-gradient-to-br dark:from-rose-950 dark:via-gray-950 dark:to-gray-950">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-purple-100">
               <TrendingUpIcon className="h-6 w-6 text-purple-600" />
             </div>
@@ -144,7 +144,7 @@ export default function HomePage() {
             </p>
           </Card>
 
-          <Card className="border-0 p-6 text-center shadow-sm transition-shadow hover:shadow-md dark:bg-gradient-to-r dark:from-rose-950 dark:to-purple-950">
+          <Card className="border-0 p-6 text-center shadow-sm transition-shadow hover:shadow-md dark:bg-gradient-to-br dark:from-rose-950 dark:via-gray-950 dark:to-gray-950">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-rose-100">
               <ShieldIcon className="h-6 w-6 text-rose-600" />
             </div>
@@ -155,7 +155,7 @@ export default function HomePage() {
             </p>
           </Card>
 
-          <Card className="border-0 p-6 text-center shadow-sm transition-shadow hover:shadow-md dark:bg-gradient-to-r dark:from-rose-950 dark:to-purple-950">
+          <Card className="border-0 p-6 text-center shadow-sm transition-shadow hover:shadow-md dark:bg-gradient-to-br dark:from-rose-950 dark:via-gray-950 dark:to-gray-950">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-purple-100">
               <BellIcon className="h-6 w-6 text-purple-600" />
             </div>
@@ -170,7 +170,7 @@ export default function HomePage() {
 
       {/* CTA Section */}
       <section className="container mx-auto max-w-6xl px-4 py-16">
-        <Card className="border-0 bg-gradient-to-r from-rose-500 to-purple-600 text-white dark:from-rose-950 dark:to-purple-950">
+        <Card className="border-0 bg-gradient-to-br from-rose-500 to-purple-600 text-white dark:from-rose-950 dark:via-gray-950 dark:to-gray-950">
           <CardContent className="p-12 text-center">
             <h2 className="mb-4 text-3xl font-bold">
               Ready to Take Control of Your Health?
