@@ -98,6 +98,58 @@ export async function getUserAction() {
   return user;
 }
 
+export async function getUserSettingsAction() {
+  const user = await getUserAction();
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  // Get user settings from database
+  const userSettings = await prisma.userSettings.findUnique({
+    where: {
+      userId: user.id,
+    },
+  });
+
+  return userSettings;
+}
+
+export async function updateUserSettingsAction(
+  data: Omit<UserSettings, "id" | "userId" | "trackingGoal">,
+) {
+  const user = await getUserAction();
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  // Update user settings in database
+  try {
+    await prisma.userSettings.update({
+      where: {
+        userId: user.id,
+      },
+      data: {
+        averageCycleLength: data.averageCycleLength,
+        averagePeriodLength: data.averagePeriodLength,
+        reminderDaysBefore: data.reminderDaysBefore,
+        enableNotifications: data.enableNotifications,
+      },
+    });
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.error("Error updating user settings:", error);
+    return {
+      success: false,
+      error: "Failed to update user settings.",
+    };
+  }
+}
+
 // import { type PeriodLog } from '@/lib/types';
 
 // export async function getPeriodLogsAction(): Promise<

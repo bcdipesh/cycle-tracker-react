@@ -324,7 +324,7 @@ export function OnboardingForm() {
         </div>
 
         {/* Onboarding Form */}
-        <Card className="relative border-0 shadow-xl dark:bg-gradient-to-br dark:from-rose-950 dark:via-gray-950 dark:to-gray-950">
+        <Card className="border-0 shadow-xl dark:bg-gradient-to-br dark:from-rose-950 dark:via-gray-950 dark:to-gray-950">
           {currentStepHtml}
           <CardFooter className="flex flex-col gap-2">
             <Button
