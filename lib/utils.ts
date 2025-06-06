@@ -1,17 +1,17 @@
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
-import { type PeriodLog } from '@/lib/types';
+import { type PeriodLog } from "@/lib/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function dateFormatter(date: Date) {
-  const formatter = new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: '2-digit',
-    year: 'numeric',
+export function dateFormatter(date: Date, year: boolean = false) {
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "2-digit",
+    year: year ? "numeric" : undefined,
   });
 
   return formatter.format(date);
@@ -19,13 +19,13 @@ export function dateFormatter(date: Date) {
 
 export function sortPeriods(
   periodLogs: PeriodLog[],
-  sortIn: 'asc' | 'desc' = 'asc'
+  sortIn: "asc" | "desc" = "asc",
 ) {
   if (periodLogs.length === 0) return periodLogs;
 
   const sortedPeriods = [...periodLogs];
 
-  if (sortIn === 'asc') {
+  if (sortIn === "asc") {
     sortedPeriods.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
   } else {
     sortedPeriods.sort((a, b) => b.startDate.getTime() - a.startDate.getTime());

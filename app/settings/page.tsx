@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowLeftIcon, BellIcon } from "lucide-react";
 import { useAuth } from "@clerk/nextjs";
 import { toast } from "sonner";
@@ -20,6 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SettingsPage() {
   const { isLoaded, signOut } = useAuth();
@@ -30,31 +31,57 @@ export default function SettingsPage() {
     enableNotifications: "",
   });
 
+  const [isLoadingSettings, setIsLoadingSettings] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const router = useRouter();
+
   useEffect(() => {
     if (isLoaded) {
-      getUserSettingsAction().then(
-        (settings) => {
-          if (!settings) {
-            return;
-          }
+      setIsLoadingSettings(true);
 
-          setUserSettings({
-            averageCycleLength: settings.averageCycleLength.toString(),
-            averagePeriodLength: settings.averagePeriodLength.toString(),
-            reminderDaysBefore: settings.reminderDaysBefore.toString(),
-            enableNotifications: settings.enableNotifications.toString(),
-          });
-        },
-        (error) => {
-          if (error.message === "Unauthorized") {
-            signOut({
-              redirectUrl: "/",
+      const fetchSettings = async () => {
+        try {
+          const settings = await getUserSettingsAction();
+
+          if (settings) {
+            setUserSettings({
+              averageCycleLength: settings.averageCycleLength.toString(),
+              averagePeriodLength: settings.averagePeriodLength.toString(),
+              reminderDaysBefore: settings.reminderDaysBefore.toString(),
+              enableNotifications: settings.enableNotifications.toString(),
             });
           }
-        },
-      );
+        } catch (error) {
+          console.error("Error fetching user settings:", error);
+
+          if (error instanceof Error) {
+            // Handle unauthorized error
+            if (error.message === "Unauthorized") {
+              signOut({
+                redirectUrl: "/",
+              });
+              return;
+            }
+
+            // Handle settings not found error
+            if (error.message.includes("User settings not found")) {
+              toast.error("Please complete onboarding first.");
+              // Redirect to onboarding
+              window.location.href = "/onboarding";
+              return;
+            }
+
+            // Show generic error
+            toast.error(error.message || "Failed to load settings.");
+          }
+        } finally {
+          setIsLoadingSettings(false);
+        }
+      };
+
+      fetchSettings();
     }
-  }, [isLoaded]);
+  }, [isLoaded, signOut]);
 
   const handleInputChange = (field: string, value: string) => {
     setUserSettings((prev) => ({
@@ -64,30 +91,90 @@ export default function SettingsPage() {
   };
 
   const handleSaveSettings = async () => {
+    setIsSaving(true);
+    // Validate inputs before sending to server
+    const validateNumber = (
+      value: string,
+      min: number,
+      max: number,
+      fieldName: string,
+    ): number | null => {
+      const num = parseInt(value);
+      if (isNaN(num) || num < min || num > max) {
+        toast.error(`${fieldName} must be between ${min} and ${max} days`);
+        return null;
+      }
+      return num;
+    };
+
+    const cycleLength = validateNumber(
+      userSettings.averageCycleLength,
+      20,
+      45,
+      "Average cycle length",
+    );
+    const periodLength = validateNumber(
+      userSettings.averagePeriodLength,
+      1,
+      10,
+      "Average period length",
+    );
+    const reminderDays = validateNumber(
+      userSettings.reminderDaysBefore,
+      1,
+      7,
+      "Reminder days",
+    );
+
+    // Don't proceed if validation failed
+    if (!cycleLength || !periodLength || !reminderDays) {
+      setIsSaving(false);
+      return;
+    }
+
     const userSettingsData = {
-      averageCycleLength: parseInt(userSettings.averageCycleLength),
-      averagePeriodLength: parseInt(userSettings.averagePeriodLength),
-      reminderDaysBefore: parseInt(userSettings.reminderDaysBefore),
+      averageCycleLength: cycleLength,
+      averagePeriodLength: periodLength,
+      reminderDaysBefore: reminderDays,
       enableNotifications: userSettings.enableNotifications === "true",
     };
 
     try {
-      toast.promise(updateUserSettingsAction(userSettingsData), {
-        loading: "Updating settings...",
-        success: "Settings updated successfully.",
-        error: (error) => {
-          if (error instanceof Error && error.message === "Unauthorized") {
-            signOut({
-              redirectUrl: "/",
-            });
-            return "Unauthorized access. Please sign in again.";
-          }
-          return error.message || "Failed to update settings.";
-        },
-      });
+      const result = await updateUserSettingsAction(userSettingsData);
+
+      if (result.success) {
+        // Show success message
+        toast.success("Settings updated successfully.");
+
+        // If the server returned updated settings, update local state
+        if (result.data) {
+          setUserSettings({
+            averageCycleLength: result.data.averageCycleLength.toString(),
+            averagePeriodLength: result.data.averagePeriodLength.toString(),
+            reminderDaysBefore: result.data.reminderDaysBefore.toString(),
+            enableNotifications: result.data.enableNotifications.toString(),
+          });
+        }
+      } else {
+        // Show error message from server
+        toast.error(result.error || "Failed to update settings.");
+      }
     } catch (error) {
       console.error("Error updating settings:", error);
-      toast.error("Failed to update settings.");
+
+      // Handle authentication errors
+      if (error instanceof Error && error.message === "Unauthorized") {
+        signOut({
+          redirectUrl: "/",
+        });
+        toast.error("Unauthorized access. Please sign in again.");
+      } else {
+        toast.error(
+          error instanceof Error ? error.message : "Failed to update settings.",
+        );
+      }
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -95,12 +182,15 @@ export default function SettingsPage() {
     <main className="mx-auto max-w-md">
       {/* Header */}
       <div className="mb-8 flex items-center">
-        <Link href="/">
-          <Button variant="ghost" size="icon" className="mr-2">
-            <ArrowLeftIcon className="h-5 w-5" />
-            <span className="sr-only">Back to home</span>
-          </Button>
-        </Link>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="mr-2 hover:cursor-pointer"
+          onClick={() => router.back()}
+        >
+          <ArrowLeftIcon className="h-5 w-5" />
+          <span className="sr-only">Go back</span>
+        </Button>
         <h1 className="text-2xl font-bold dark:text-white">Settings</h1>
       </div>
 
@@ -114,16 +204,20 @@ export default function SettingsPage() {
           <div className="space-y-2">
             <Label htmlFor="averageCycleLength">Average Cycle Length</Label>
             <div className="flex items-center gap-2">
-              <Input
-                id="averageCycleLength"
-                type="number"
-                value={userSettings?.averageCycleLength}
-                min={20}
-                max={45}
-                onChange={(e) =>
-                  handleInputChange("averageCycleLength", e.target.value)
-                }
-              />
+              {isLoadingSettings ? (
+                <Skeleton className="h-9 w-full" />
+              ) : (
+                <Input
+                  id="averageCycleLength"
+                  type="number"
+                  value={userSettings?.averageCycleLength}
+                  min={20}
+                  max={45}
+                  onChange={(e) =>
+                    handleInputChange("averageCycleLength", e.target.value)
+                  }
+                />
+              )}
               <span className="text-muted-foreground text-sm">days</span>
             </div>
           </div>
@@ -131,16 +225,20 @@ export default function SettingsPage() {
           <div className="space-y-2">
             <Label htmlFor="averagePeriodLength">Average Period Length</Label>
             <div className="flex items-center gap-2">
-              <Input
-                id="averagePeriodLength"
-                type="number"
-                value={userSettings?.averagePeriodLength}
-                min={1}
-                max={10}
-                onChange={(e) =>
-                  handleInputChange("averagePeriodLength", e.target.value)
-                }
-              />
+              {isLoadingSettings ? (
+                <Skeleton className="h-9 w-full" />
+              ) : (
+                <Input
+                  id="averagePeriodLength"
+                  type="number"
+                  value={userSettings?.averagePeriodLength}
+                  min={1}
+                  max={10}
+                  onChange={(e) =>
+                    handleInputChange("averagePeriodLength", e.target.value)
+                  }
+                />
+              )}
               <span className="text-muted-foreground text-sm">days</span>
             </div>
           </div>
@@ -161,34 +259,53 @@ export default function SettingsPage() {
                 Period Reminder
               </Label>
             </div>
-            <Switch
-              id="enableNotifications"
-              checked={userSettings?.enableNotifications === "true"}
-              onCheckedChange={(checked) =>
-                handleInputChange("enableNotifications", checked.toString())
-              }
-            />
+            {isLoadingSettings ? (
+              <Skeleton className="size-4" />
+            ) : (
+              <Switch
+                id="enableNotifications"
+                checked={userSettings?.enableNotifications === "true"}
+                onCheckedChange={(checked) =>
+                  handleInputChange("enableNotifications", checked.toString())
+                }
+              />
+            )}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="reminderDaysBefore">Remind me before</Label>
             <div className="flex items-center gap-2">
-              <Input
-                id="reminderDaysBefore"
-                type="number"
-                value={userSettings?.reminderDaysBefore}
-                min={1}
-                max={7}
-                onChange={(e) =>
-                  handleInputChange("reminderDaysBefore", e.target.value)
-                }
-              />
+              {isLoadingSettings ? (
+                <Skeleton className="h-9 w-full" />
+              ) : (
+                <Input
+                  id="reminderDaysBefore"
+                  type="number"
+                  value={userSettings?.reminderDaysBefore}
+                  min={1}
+                  max={7}
+                  onChange={(e) =>
+                    handleInputChange("reminderDaysBefore", e.target.value)
+                  }
+                />
+              )}
               <span className="text-muted-foreground text-sm">days</span>
             </div>
           </div>
         </CardContent>
         <CardFooter>
-          <Button onClick={handleSaveSettings}>Save Changes</Button>
+          <Button
+            onClick={handleSaveSettings}
+            disabled={isLoadingSettings || isSaving}
+            className="relative"
+          >
+            {isSaving && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+              </div>
+            )}
+            <span className={isSaving ? "opacity-0" : ""}>Save Changes</span>
+          </Button>
         </CardFooter>
       </Card>
     </main>

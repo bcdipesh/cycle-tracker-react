@@ -44,7 +44,7 @@ export function OnboardingForm() {
       getUserAction().then(
         (user) => {
           if (user?.onboardingCompleted) {
-            router.push("/settings");
+            router.push("/dashboard");
           }
         },
         (error) => {
@@ -271,23 +271,37 @@ export function OnboardingForm() {
       setStep(step + 1);
     } else {
       setIsLoading(true);
-      const response = await finishOnboardingAction({
-        averageCycleLength: parseInt(onboardingData.cycleLength),
-        averagePeriodLength: parseInt(onboardingData.periodLength),
-        lastPeriodDate: new Date(onboardingData.lastPeriodDate),
-        reminderDaysBefore: 2,
-        enableNotifications: true,
-        trackingGoal: onboardingData.trackingGoal,
-      });
+      try {
+        const response = await finishOnboardingAction({
+          averageCycleLength: parseInt(onboardingData.cycleLength),
+          averagePeriodLength: parseInt(onboardingData.periodLength),
+          lastPeriodDate: new Date(onboardingData.lastPeriodDate),
+          reminderDaysBefore: 2,
+          enableNotifications: true,
+          trackingGoal: onboardingData.trackingGoal,
+        });
 
-      if (response.success) {
-        toast.success("Onboarding successful! Redirecting to dashboard...");
-      } else {
-        toast.error(response.error);
+        if (response.success) {
+          toast.success("Onboarding successful! Redirecting to dashboard...");
+          router.push("/dashboard");
+        } else {
+          // Type guard to check if the error property exists
+          const errorMessage =
+            "error" in response
+              ? response.error
+              : "Failed to save onboarding data";
+          toast.error(errorMessage);
+        }
+      } catch (error) {
+        // Handle any uncaught errors
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
+        );
+      } finally {
+        setIsLoading(false);
       }
-
-      setIsLoading(false);
-      router.push("/dashboard");
     }
   };
 

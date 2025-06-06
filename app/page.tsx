@@ -5,13 +5,20 @@ import {
   ShieldIcon,
   TrendingUpIcon,
 } from "lucide-react";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Logo } from "@/components/logo";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const { userId } = await auth();
+
+  if (userId) {
+    redirect("/dashboard");
+  }
+
   return (
     <>
       {/* Header */}
@@ -19,32 +26,12 @@ export default function HomePage() {
         <div className="flex items-center justify-between">
           <Logo />
           <div className="space-x-2">
-            <SignedIn>
-              <UserButton
-                appearance={{
-                  elements: {
-                    userButtonPopoverCard: "dark:text-white!",
-                    userButtonPopoverMain:
-                      "dark:bg-gradient-to-br dark:from-rose-950 dark:to-purple-950 rounded-none! dark:bg-inherit!",
-                    userButtonPopoverActionButton:
-                      "dark:text-white! dark:hover:bg-input/30!",
-                    userButtonPopoverFooter:
-                      "dark:bg-gradient-to-br! dark:from-rose-950! dark:to-purple-950! dark:**:text-white!",
-                  },
-                  layout: {
-                    unsafe_disableDevelopmentModeWarnings: true,
-                  },
-                }}
-              />
-            </SignedIn>
-            <SignedOut>
-              <Button variant="ghost" asChild>
-                <Link href="/sign-in">Sign In</Link>
-              </Button>
-              <Button asChild>
-                <Link href="/sign-up">Sign Up</Link>
-              </Button>
-            </SignedOut>
+            <Button variant="ghost" asChild>
+              <Link href="/sign-in">Sign In</Link>
+            </Button>
+            <Button asChild>
+              <Link href="/sign-up">Sign Up</Link>
+            </Button>
           </div>
         </div>
       </header>
