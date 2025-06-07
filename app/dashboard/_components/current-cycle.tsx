@@ -1,14 +1,13 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { useEffect, useState } from 'react';
 
-import { getCurrentPeriodAction } from "@/lib/actions";
-import { Period } from "@/app/generated/prisma";
-import { dateFormatter } from "@/lib/utils";
+import Link from 'next/link';
 
-import { Button } from "@/components/ui/button";
+import { ChevronRight, Cog } from 'lucide-react';
+
+import { Period } from '@/app/generated/prisma';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -16,9 +15,11 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Progress } from "@/components/ui/progress";
+} from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
+import { getCurrentPeriodAction } from '@/lib/actions';
+import { dateFormatter } from '@/lib/utils';
 
 export function CurrentCycle() {
   const [isLoading, setIsLoading] = useState(true);
@@ -45,7 +46,7 @@ export function CurrentCycle() {
         setPeriod(period);
         setIsLoading(false);
       } catch (error) {
-        console.error("Error fetching cycle data:", error);
+        console.error('Error fetching cycle data:', error);
         setIsLoading(false);
       }
     };
@@ -56,7 +57,15 @@ export function CurrentCycle() {
   return (
     <Card className="mb-6 border-0 dark:bg-gradient-to-br dark:from-rose-950 dark:via-gray-950 dark:to-gray-950">
       <CardHeader className="pb-2">
-        <CardTitle>Current Cycle</CardTitle>
+        <CardTitle className="flex items-center justify-between">
+          <span>Current Cycle</span>
+          <Button variant="ghost" size="icon" asChild>
+            <Link href="/settings">
+              <Cog className="h-5 w-5" />
+              <span className="sr-only">Settings</span>
+            </Link>
+          </Button>
+        </CardTitle>
         <CardDescription>
           {isLoading ? (
             <Skeleton className="h-5 w-20" />
@@ -89,7 +98,7 @@ export function CurrentCycle() {
                 <Skeleton className="h-5 w-20" />
               ) : (
                 <p className="text-muted-foreground">
-                  {dateFormatter(fertileStartDate)} —{" "}
+                  {dateFormatter(fertileStartDate)} —{' '}
                   {dateFormatter(fertileEndDate)}
                 </p>
               )}
@@ -100,7 +109,7 @@ export function CurrentCycle() {
                 <Skeleton className="h-5 w-20" />
               ) : (
                 <p className="text-muted-foreground">
-                  {dateFormatter(nextPeriodStartDate)} —{" "}
+                  {dateFormatter(nextPeriodStartDate)} —{' '}
                   {dateFormatter(nextPeriodEndDate)}
                 </p>
               )}

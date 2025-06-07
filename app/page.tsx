@@ -1,40 +1,16 @@
-import Link from "next/link";
-import {
-  BellIcon,
-  CalendarIcon,
-  ShieldIcon,
-  TrendingUpIcon,
-} from "lucide-react";
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
+import Link from 'next/link';
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Logo } from "@/components/logo";
+import { Bell, Calendar, Shield, TrendingUp } from 'lucide-react';
+
+import { Footer } from '@/components/footer';
+import { Header } from '@/components/header';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 export default async function HomePage() {
-  const { userId } = await auth();
-
-  if (userId) {
-    redirect("/dashboard");
-  }
-
   return (
     <>
-      {/* Header */}
-      <header className="container mx-auto max-w-6xl px-4 py-6">
-        <div className="flex items-center justify-between">
-          <Logo />
-          <div className="space-x-2">
-            <Button variant="ghost" asChild>
-              <Link href="/sign-in">Sign In</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/sign-up">Sign Up</Link>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Hero Section */}
       <section className="container mx-auto max-w-6xl px-4 py-16 text-center">
@@ -111,7 +87,7 @@ export default async function HomePage() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <Card className="border-0 p-6 text-center shadow-sm transition-shadow hover:shadow-md dark:bg-gradient-to-br dark:from-rose-950 dark:via-gray-950 dark:to-gray-950">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-rose-100">
-              <CalendarIcon className="h-6 w-6 text-rose-600" />
+              <Calendar className="h-6 w-6 text-rose-600" />
             </div>
             <h3 className="mb-2 font-semibold">Smart Calendar</h3>
             <p className="text-muted-foreground text-sm">
@@ -122,7 +98,7 @@ export default async function HomePage() {
 
           <Card className="border-0 p-6 text-center shadow-sm transition-shadow hover:shadow-md dark:bg-gradient-to-br dark:from-rose-950 dark:via-gray-950 dark:to-gray-950">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-purple-100">
-              <TrendingUpIcon className="h-6 w-6 text-purple-600" />
+              <TrendingUp className="h-6 w-6 text-purple-600" />
             </div>
             <h3 className="mb-2 font-semibold">Cycle Insights</h3>
             <p className="text-muted-foreground text-sm">
@@ -133,7 +109,7 @@ export default async function HomePage() {
 
           <Card className="border-0 p-6 text-center shadow-sm transition-shadow hover:shadow-md dark:bg-gradient-to-br dark:from-rose-950 dark:via-gray-950 dark:to-gray-950">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-rose-100">
-              <ShieldIcon className="h-6 w-6 text-rose-600" />
+              <Shield className="h-6 w-6 text-rose-600" />
             </div>
             <h3 className="mb-2 font-semibold">Private & Secure</h3>
             <p className="text-muted-foreground text-sm">
@@ -144,7 +120,7 @@ export default async function HomePage() {
 
           <Card className="border-0 p-6 text-center shadow-sm transition-shadow hover:shadow-md dark:bg-gradient-to-br dark:from-rose-950 dark:via-gray-950 dark:to-gray-950">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-purple-100">
-              <BellIcon className="h-6 w-6 text-purple-600" />
+              <Bell className="h-6 w-6 text-purple-600" />
             </div>
             <h3 className="mb-2 font-semibold">Smart Reminders</h3>
             <p className="text-muted-foreground text-sm">
@@ -179,20 +155,7 @@ export default async function HomePage() {
         </Card>
       </section>
 
-      {/* Footer */}
-      <footer className="container mx-auto max-w-6xl border-t px-4 py-8">
-        <div className="flex flex-col items-center justify-between md:flex-row">
-          <div className="mb-4 flex items-center space-x-2 md:mb-0">
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-rose-400 to-purple-500">
-              <CalendarIcon className="h-3 w-3 text-white" />
-            </div>
-            <span className="font-semibold">CycleTracker</span>
-          </div>
-          <p className="text-muted-foreground text-sm">
-            © 2024 CycleTracker. Your health, your data, your control.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </>
   );
 }
