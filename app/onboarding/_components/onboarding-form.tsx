@@ -1,386 +1,134 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@clerk/nextjs";
-import { ArrowRightIcon, ArrowLeftIcon } from "lucide-react";
-import { toast } from "sonner";
-import { TrackingGoal } from "@/app/generated/prisma";
+import { useState, useTransition } from 'react';
 
-import { finishOnboardingAction, getUserAction } from "@/lib/actions";
+import { useRouter } from 'next/navigation';
 
-import { Button } from "@/components/ui/button";
+import { useAuth } from '@clerk/nextjs';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { FormProvider, useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+
+import { TrackingGoal } from '@/app/generated/prisma';
+import { Button } from '@/components/ui/button';
+import { Card, CardFooter } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Logo } from "@/components/logo";
-import { Progress } from "@/components/ui/progress";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+  OnboardingData,
+  onboardingSchema,
+} from '@/lib/schemas/onboarding-schema';
+import { finishUserOnboarding } from '@/lib/services/user.service';
+
+import { Step1CycleInfo } from './step1-cycle-info';
+import { Step2LastPeriod } from './step2-last-period';
+import { Step3TrackingGoal } from './step3-tracking-goal';
+import { Step4Confirmation } from './step4-confirmation';
+
+const totalSteps = 4;
+const stepsValidation: (keyof OnboardingData)[][] = [
+  ['cycleLength', 'periodLength'],
+  ['lastPeriodDate'],
+  ['trackingGoal'],
+  [],
+];
 
 export function OnboardingForm() {
-  const { isLoaded, signOut } = useAuth();
-  const [step, setStep] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
-  const [onboardingData, setOnboardingData] = useState({
-    cycleLength: "28",
-    periodLength: "5",
-    lastPeriodDate: "",
-    trackingGoal: TrackingGoal.GENERAL,
-  });
+  const { userId } = useAuth();
+  const [currentStep, setCurrentStep] = useState(1);
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
-  const totalSteps = 4;
-  const progressPercentage = (step / totalSteps) * 100;
-  let currentStepHtml: React.ReactNode;
 
-  useEffect(() => {
-    if (isLoaded) {
-      getUserAction().then(
-        (user) => {
-          if (user?.onboardingCompleted) {
-            router.push("/dashboard");
-          }
-        },
-        (error) => {
-          if (error.message === "Unauthorized") {
-            signOut({
-              redirectUrl: "/",
-            });
-          }
-        },
-      );
-    }
-  }, [isLoaded]);
-
-  switch (step) {
-    case 1:
-      currentStepHtml = (
-        <>
-          <CardHeader className="text-center">
-            <CardTitle>Welcome to CycleTracker! 🌸</CardTitle>
-            <CardDescription>
-              Let's set up your profile to give you the most accurate tracking
-              experience.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="cycle-length">
-                  What's your average cycle length?
-                </Label>
-                <div className="flex items-center space-x-2">
-                  <Input
-                    id="cycle-length"
-                    type="number"
-                    min="20"
-                    max="45"
-                    value={onboardingData.cycleLength}
-                    onChange={(e) =>
-                      handleInputChange("cycleLength", e.target.value)
-                    }
-                  />
-                  <span className="text-muted-foreground text-sm">days</span>
-                </div>
-                <p className="text-muted-foreground text-xs">
-                  Most cycles are between 21-35 days. If you're not sure, 28
-                  days is a good starting point.
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="period-length">
-                  How long does your period usually last?
-                </Label>
-                <div className="flex items-center space-x-2">
-                  <Input
-                    id="period-length"
-                    type="number"
-                    min="1"
-                    max="10"
-                    value={onboardingData.periodLength}
-                    onChange={(e) =>
-                      handleInputChange("periodLength", e.target.value)
-                    }
-                  />
-                  <span className="text-muted-foreground text-sm">days</span>
-                </div>
-                <p className="text-muted-foreground text-xs">
-                  Typical periods last 3-7 days.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </>
-      );
-      break;
-    case 2:
-      currentStepHtml = (
-        <>
-          <CardHeader className="text-center">
-            <CardTitle>When was your last period?</CardTitle>
-            <CardDescription>
-              This helps us predict your next cycle and fertile window.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="last-period">
-                  First day of your last period
-                </Label>
-                <Input
-                  id="last-period"
-                  type="date"
-                  value={onboardingData.lastPeriodDate}
-                  onChange={(e) =>
-                    handleInputChange("lastPeriodDate", e.target.value)
-                  }
-                  max={new Date().toISOString().split("T")[0]}
-                />
-                <p className="text-muted-foreground text-xs">
-                  Select the first day your last period started. If you can't
-                  remember the exact date, an estimate is fine.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </>
-      );
-      break;
-    case 3:
-      currentStepHtml = (
-        <>
-          <CardHeader className="text-center">
-            <CardTitle>What's your main tracking goal?</CardTitle>
-            <CardDescription>
-              This helps us customize your experience and insights.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <RadioGroup
-              value={onboardingData.trackingGoal}
-              onValueChange={(value) =>
-                handleInputChange("trackingGoal", value)
-              }
-              className="space-y-3"
-            >
-              <div className="hover:bg-muted/50 flex items-center space-x-2 rounded-lg border p-3">
-                <RadioGroupItem value={TrackingGoal.GENERAL} id="general" />
-                <Label htmlFor="general" className="flex-1 cursor-pointer">
-                  <div>
-                    <p className="font-medium">General health tracking</p>
-                    <p className="text-muted-foreground text-sm">
-                      Monitor cycles and symptoms
-                    </p>
-                  </div>
-                </Label>
-              </div>
-
-              <div className="hover:bg-muted/50 flex items-center space-x-2 rounded-lg border p-3">
-                <RadioGroupItem
-                  value={TrackingGoal.CONCEPTION}
-                  id="conception"
-                />
-                <Label htmlFor="conception" className="flex-1 cursor-pointer">
-                  <div>
-                    <p className="font-medium">Trying to conceive</p>
-                    <p className="text-muted-foreground text-sm">
-                      Track fertility and ovulation
-                    </p>
-                  </div>
-                </Label>
-              </div>
-
-              <div className="hover:bg-muted/50 flex items-center space-x-2 rounded-lg border p-3">
-                <RadioGroupItem
-                  value={TrackingGoal.CONTRACEPTION}
-                  id="contraception"
-                />
-                <Label
-                  htmlFor="contraception"
-                  className="flex-1 cursor-pointer"
-                >
-                  <div>
-                    <p className="font-medium">Natural contraception</p>
-                    <p className="text-muted-foreground text-sm">
-                      Avoid fertile days
-                    </p>
-                  </div>
-                </Label>
-              </div>
-
-              <div className="hover:bg-muted/50 flex items-center space-x-2 rounded-lg border p-3">
-                <RadioGroupItem value={TrackingGoal.HEALTH} id="health" />
-                <Label htmlFor="health" className="flex-1 cursor-pointer">
-                  <div>
-                    <p className="font-medium">Health monitoring</p>
-                    <p className="text-muted-foreground text-sm">
-                      Track symptoms and patterns
-                    </p>
-                  </div>
-                </Label>
-              </div>
-            </RadioGroup>
-          </CardContent>
-        </>
-      );
-      break;
-    case 4:
-      currentStepHtml = (
-        <>
-          <CardHeader className="text-center">
-            <CardTitle>You're all set! 🎉</CardTitle>
-            <CardDescription>
-              Your CycleTracker is ready to help you understand your body
-              better.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4 text-center">
-              <div className="rounded-lg bg-gradient-to-r from-rose-50 to-purple-50 p-6 dark:from-rose-950 dark:to-purple-950">
-                <h3 className="mb-2 font-semibold">What's next?</h3>
-                <ul className="text-muted-foreground space-y-1 text-sm">
-                  <li>• Start logging your daily symptoms</li>
-                  <li>• View your personalized calendar</li>
-                  <li>• Get insights about your cycle</li>
-                  <li>• Set up helpful reminders</li>
-                </ul>
-              </div>
-
-              <div className="text-muted-foreground text-xs">
-                <p>
-                  Remember: It may take a few cycles for predictions to become
-                  more accurate as we learn your unique patterns.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </>
-      );
-  }
+  const onboardingForm = useForm<OnboardingData>({
+    resolver: zodResolver(onboardingSchema),
+    defaultValues: {
+      cycleLength: 28,
+      periodLength: 5,
+      lastPeriodDate: new Date(),
+      trackingGoal: TrackingGoal.GENERAL,
+    },
+  });
 
   const handleNextStep = async () => {
-    if (step < totalSteps) {
-      setStep(step + 1);
-    } else {
-      setIsLoading(true);
-      try {
-        const response = await finishOnboardingAction({
-          averageCycleLength: parseInt(onboardingData.cycleLength),
-          averagePeriodLength: parseInt(onboardingData.periodLength),
-          lastPeriodDate: new Date(onboardingData.lastPeriodDate),
-          reminderDaysBefore: 2,
-          enableNotifications: true,
-          trackingGoal: onboardingData.trackingGoal,
-        });
+    const fieldsToValidate = stepsValidation[currentStep - 1];
+    const isValid = await onboardingForm.trigger(fieldsToValidate);
+    if (!isValid) return;
 
-        if (response.success) {
-          toast.success("Onboarding successful! Redirecting to dashboard...");
-          router.push("/dashboard");
-        } else {
-          // Type guard to check if the error property exists
-          const errorMessage =
-            "error" in response
-              ? response.error
-              : "Failed to save onboarding data";
-          toast.error(errorMessage);
-        }
-      } catch (error) {
-        // Handle any uncaught errors
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred",
-        );
-      } finally {
-        setIsLoading(false);
-      }
+    if (currentStep < totalSteps) {
+      setCurrentStep(currentStep + 1);
     }
   };
 
   const handlePreviousStep = () => {
-    if (step > 1) {
-      setStep(step - 1);
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
     }
   };
 
-  const handleInputChange = (field: string, value: string) => {
-    setOnboardingData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+  const onSubmit = (onboardingData: OnboardingData) => {
+    startTransition(async () => {
+      await finishUserOnboarding(userId!, {
+        cycleLength: onboardingData.cycleLength,
+        periodLength: onboardingData.periodLength,
+        trackingGoal: onboardingData.trackingGoal,
+        lastPeriodDate: onboardingData.lastPeriodDate,
+      });
+      toast.success('Onboarding completed successfully');
+      router.push('/dashboard');
+    });
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <div className="w-full max-w-md">
-        {/* Header */}
-        <div className="mb-8 flex items-center justify-center">
-          <Logo />
+    <FormProvider {...onboardingForm}>
+      <div className="mb-8">
+        <div className="text-muted-foreground mb-2 flex justify-between text-sm">
+          <span>
+            Step {currentStep} of {totalSteps}
+          </span>
+          <span>{Math.round((currentStep / totalSteps) * 100)}% complete</span>
         </div>
+        <Progress
+          value={Math.round((currentStep / totalSteps) * 100)}
+          className="h-2"
+        />
+      </div>
 
-        {/* Progress */}
-        <div className="mb-8">
-          <div className="text-muted-foreground mb-2 flex justify-between text-sm">
-            <span>
-              Step {step} of {totalSteps}
-            </span>
-            <span>{Math.round(progressPercentage)}% complete</span>
-          </div>
-          <Progress value={progressPercentage} className="h-2" />
-        </div>
+      <form onSubmit={onboardingForm.handleSubmit(onSubmit)}>
+        <Card>
+          {currentStep === 1 && <Step1CycleInfo />}
+          {currentStep === 2 && <Step2LastPeriod />}
+          {currentStep === 3 && <Step3TrackingGoal />}
+          {currentStep === 4 && <Step4Confirmation />}
 
-        {/* Onboarding Form */}
-        <Card className="border-0 shadow-xl dark:bg-gradient-to-br dark:from-rose-950 dark:via-gray-950 dark:to-gray-950">
-          {currentStepHtml}
-          <CardFooter className="flex flex-col gap-2">
-            <Button
-              onClick={handleNextStep}
-              className="w-full"
-              disabled={isLoading}
-            >
-              {step === totalSteps ? (
-                <>
-                  Start Tracking
-                  <ArrowRightIcon className="ml-2 h-4 w-4" />
-                </>
-              ) : (
-                <>
+          <CardFooter>
+            <div className="w-full space-y-2">
+              {currentStep < totalSteps && (
+                <Button
+                  type="button"
+                  onClick={handleNextStep}
+                  className="w-full"
+                >
                   Continue
-                  <ArrowRightIcon className="ml-2 h-4 w-4" />
-                </>
+                </Button>
               )}
-            </Button>
-            {step > 1 && (
-              <Button
-                variant="outline"
-                onClick={handlePreviousStep}
-                className="w-full"
-                disabled={isLoading}
-              >
-                <ArrowLeftIcon className="ml-2 h-4 w-4" />
-                Go Back
-              </Button>
-            )}
+              {currentStep === totalSteps && (
+                <Button type="submit" disabled={isPending} className="w-full">
+                  Start Tracking
+                </Button>
+              )}
+              {currentStep > 1 && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handlePreviousStep}
+                  className="w-full"
+                >
+                  Go Back
+                </Button>
+              )}
+            </div>
           </CardFooter>
         </Card>
-
-        {/* Skip onboarding */}
-        {step < totalSteps && (
-          <div className="mt-4 text-center">
-            <Button variant="ghost" onClick={() => router.push("/dashboard")}>
-              Skip for now
-            </Button>
-          </div>
-        )}
-      </div>
-    </main>
+      </form>
+    </FormProvider>
   );
 }

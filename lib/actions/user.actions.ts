@@ -1,4 +1,7 @@
+'use server';
+
 import db from '@/lib/db';
+import { UserSettingsData } from '@/lib/schemas/usersettings-schema';
 
 export type CreateUserParams = {
   clerkId: string;
@@ -25,5 +28,23 @@ export async function getUserOnboardingStatusByClerkId(clerkId: string) {
     select: {
       onboardingCompleted: true,
     },
+  });
+}
+
+export async function updateUserOnboardingStatus(
+  userId: string,
+  isOnboardingCompleted: boolean,
+) {
+  return await db.user.update({
+    where: { id: userId },
+    data: {
+      onboardingCompleted: isOnboardingCompleted,
+    },
+  });
+}
+
+export async function createUserSettings(settingsData: UserSettingsData) {
+  return await db.userSettings.create({
+    data: settingsData,
   });
 }
