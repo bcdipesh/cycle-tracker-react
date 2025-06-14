@@ -3,9 +3,9 @@ import {
   createUserSettings,
   getUserFromDbByClerkId,
   getUserOnboardingStatusByClerkId,
-  getUserSettingsFromDbById,
   updateUserOnboardingStatus,
 } from '@/lib/actions/user.actions';
+import db from '@/lib/db';
 import { OnboardingData } from '@/lib/schemas/onboarding-schema';
 import { UserSettingsData } from '@/lib/schemas/usersettings-schema';
 
@@ -21,7 +21,7 @@ export async function finishUserOnboarding(
 ) {
   const user = await getUserFromDbByClerkId(clerkId);
   if (!user) {
-    throw new Error('User not found');
+    throw new Error('User not found.');
   }
 
   await updateUserOnboardingStatus(user.id, true);
@@ -37,13 +37,36 @@ export async function finishUserOnboarding(
   });
 }
 
-export async function getUserSettingsByClerkId(clerkId: string) {
-  const user = await getUserFromDbByClerkId(clerkId);
+export async function fetchUserSettingsByClerkId(clerkId: string) {
+  const user = await db.user.findUnique({
+    where: { clerkId },
+    include: {
+      UserSettings: true,
+    },
+  });
   if (!user) {
-    throw new Error('User not found');
+    throw new Error('User not found.');
   }
 
-  const settings = await getUserSettingsFromDbById(user.id);
+  return user.UserSettings;
+}
 
-  return settings;
+export async function updateUserSettingsByClerkId(
+  clerkId: string,
+  data: UserSettingsData,
+) {
+  const user = await db.user.findUnique({
+    where: { clerkId },
+    select: { id: true },
+  });
+  if (!user) {
+    throw new Error('User not found.');
+  }
+
+  const { userId, ...updateData } = data;
+
+  return await db.userSettings.update({
+    where: { userId: user.id },
+    data: updateData,
+  });
 }

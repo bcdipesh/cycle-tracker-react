@@ -4,26 +4,24 @@ import { useEffect, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { useAuth } from '@clerk/nextjs';
 import { ArrowLeft } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { getCurrentUserSettings } from '@/lib/actions/user.actions';
 import { UserSettingsData } from '@/lib/schemas/usersettings-schema';
-import { getUserSettingsByClerkId } from '@/lib/services/user.service';
 
 import { SettingsForm } from './_components/settings-form';
 import { SettingsFormSkeleton } from './_components/settings-form-skeleton';
 
 export default function SettingsPage() {
-  const { userId, isLoaded } = useAuth();
   const router = useRouter();
   const [settings, setSettings] = useState<UserSettingsData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchSettings = async (userId: string) => {
+    const fetchSettings = async () => {
       try {
-        const userSettings = await getUserSettingsByClerkId(userId);
+        const userSettings = await getCurrentUserSettings();
         setSettings(userSettings);
       } catch (error) {
         console.error('Failed to fetch settings', error);
@@ -32,10 +30,8 @@ export default function SettingsPage() {
       }
     };
 
-    if (isLoaded && userId) {
-      fetchSettings(userId);
-    }
-  }, [isLoaded]);
+    fetchSettings();
+  }, []);
 
   return (
     <main className="mx-auto max-w-md">
@@ -52,7 +48,7 @@ export default function SettingsPage() {
         <h1 className="text-2xl font-bold">Settings</h1>
       </div>
 
-      {isLoading || !isLoaded ? (
+      {isLoading ? (
         <SettingsFormSkeleton />
       ) : (
         <SettingsForm settings={settings!} />

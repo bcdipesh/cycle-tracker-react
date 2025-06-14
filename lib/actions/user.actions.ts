@@ -1,7 +1,13 @@
 'use server';
 
+import { auth } from '@clerk/nextjs/server';
+
 import db from '@/lib/db';
 import { UserSettingsData } from '@/lib/schemas/usersettings-schema';
+import {
+  fetchUserSettingsByClerkId,
+  updateUserSettingsByClerkId,
+} from '@/lib/services/user.service';
 
 export type CreateUserParams = {
   clerkId: string;
@@ -49,8 +55,20 @@ export async function createUserSettings(userSettingsData: UserSettingsData) {
   });
 }
 
-export async function getUserSettingsFromDbById(id: string) {
-  return await db.userSettings.findUnique({
-    where: { userId: id },
-  });
+export async function getCurrentUserSettings() {
+  const { userId: clerkId } = await auth();
+  if (!clerkId) {
+    throw new Error('Unauthorized');
+  }
+
+  return fetchUserSettingsByClerkId(clerkId);
+}
+
+export async function updateUserSettings(data: UserSettingsData) {
+  const { userId: clerkId } = await auth();
+  if (!clerkId) {
+    throw new Error('Unauthorized');
+  }
+
+  return await updateUserSettingsByClerkId(clerkId, data);
 }

@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { updateUserSettingsAction } from '@/lib/actions';
+import { updateUserSettings } from '@/lib/actions/user.actions';
 import {
   UserSettingsData,
   userSettingsSchema,
@@ -56,19 +56,13 @@ export function SettingsForm({ settings }: SettingsFormProps) {
 
   const onSubmit = (data: UserSettingsData) => {
     startTransition(async () => {
-      const result = await new Promise<{ success?: boolean; error?: string }>(
-        (resolve, reject) => {
-          setTimeout(() => {
-            console.log(data);
-            resolve({ success: true });
-          }, 5000);
-        },
-      );
+      const result = await updateUserSettings(data);
 
-      if (result.success) {
+      if (result) {
+        form.reset(result);
         toast.success('Settings updated successfully.');
       } else {
-        toast.error(result.error || 'Failed to update settings.');
+        toast.error('Failed to update settings.');
       }
     });
   };
