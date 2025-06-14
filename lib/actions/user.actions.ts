@@ -43,8 +43,14 @@ export async function updateUserOnboardingStatus(
   });
 }
 
-export async function createUserSettings(settingsData: UserSettingsData) {
+export async function createUserSettings(userSettingsData: UserSettingsData) {
   return await db.userSettings.create({
-    data: settingsData,
+    data: userSettingsData,
+  });
+}
+
+export async function getUserSettingsFromDbById(id: string) {
+  return await db.userSettings.findUnique({
+    where: { userId: id },
   });
 }
