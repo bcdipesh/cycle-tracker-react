@@ -1,8 +1,7 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
-
 import { createUserPeriod } from '@/lib/actions/period.actions';
+import { getAuthenticatedSession } from '@/lib/auth';
 import { OnboardingData } from '@/lib/schemas/onboarding-schema';
 import { UserSettingsData } from '@/lib/schemas/usersettings-schema';
 import {
@@ -14,8 +13,7 @@ import {
 } from '@/lib/services/user.service';
 
 export async function finishUserOnboarding(onboardingData: OnboardingData) {
-  const { userId: clerkId } = await auth();
-  if (!clerkId) throw new Error('Unauthorized');
+  const { clerkId } = await getAuthenticatedSession();
 
   const user = await getUserByClerkId(clerkId);
   if (!user) throw new Error('User not found.');
@@ -37,19 +35,13 @@ export async function finishUserOnboarding(onboardingData: OnboardingData) {
 }
 
 export async function getCurrentUserSettings() {
-  const { userId: clerkId } = await auth();
-  if (!clerkId) {
-    throw new Error('Unauthorized');
-  }
+  const { clerkId } = await getAuthenticatedSession();
 
   return fetchUserSettingsByClerkId(clerkId);
 }
 
 export async function updateUserSettings(newSettingsData: UserSettingsData) {
-  const { userId: clerkId } = await auth();
-  if (!clerkId) {
-    throw new Error('Unauthorized');
-  }
+  const { clerkId } = await getAuthenticatedSession();
 
   return await updateUserSettingsByClerkId({ clerkId, newSettingsData });
 }
