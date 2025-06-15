@@ -1,22 +1,17 @@
 import { redirect } from 'next/navigation';
 
 import { UserButton } from '@clerk/nextjs';
-import { auth } from '@clerk/nextjs/server';
 
 import { Logo } from '@/components/logo';
+import { requirePageAuthentication } from '@/lib/auth';
 import { hasUserCompletedOnboarding } from '@/lib/services/user.service';
 
 import { CurrentCycle } from './_components/current-cycle';
 
 export default async function DashboardPage() {
-  const { userId } = await auth();
+  const { clerkId } = await requirePageAuthentication();
 
-  if (!userId) {
-    redirect('/sign-in');
-  }
-
-  const isOnboardingCompleted = await hasUserCompletedOnboarding(userId);
-
+  const isOnboardingCompleted = await hasUserCompletedOnboarding(clerkId);
   if (!isOnboardingCompleted) {
     redirect('/onboarding');
   }
