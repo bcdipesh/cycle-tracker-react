@@ -1,40 +1,59 @@
-import { createPeriod } from '@/lib/actions/period.actions';
-import {
-  createUserSettings,
-  getUserFromDbByClerkId,
-  getUserOnboardingStatusByClerkId,
-  updateUserOnboardingStatus,
-} from '@/lib/actions/user.actions';
 import db from '@/lib/db';
-import { OnboardingData } from '@/lib/schemas/onboarding-schema';
 import { UserSettingsData } from '@/lib/schemas/usersettings-schema';
+
+export type CreateUserParams = {
+  clerkId: string;
+  email: string;
+  firstName?: string | null;
+  lastName?: string | null;
+};
+
+export async function createUser(userData: CreateUserParams) {
+  return await db.user.create({
+    data: userData,
+  });
+}
+
+export async function getUserByClerkId(clerkId: string) {
+  return await db.user.findUnique({
+    where: { clerkId },
+  });
+}
+
+export async function getUserOnboardingStatusByClerkId(clerkId: string) {
+  return await db.user.findUnique({
+    where: { clerkId },
+    select: {
+      onboardingCompleted: true,
+    },
+  });
+}
+
+export async function updateUserOnboardingStatus({
+  userId,
+  isOnboardingCompleted,
+}: {
+  userId: string;
+  isOnboardingCompleted: boolean;
+}) {
+  return await db.user.update({
+    where: { id: userId },
+    data: {
+      onboardingCompleted: isOnboardingCompleted,
+    },
+  });
+}
+
+export async function createUserSettings(userSettingsData: UserSettingsData) {
+  return await db.userSettings.create({
+    data: userSettingsData,
+  });
+}
 
 export async function hasUserCompletedOnboarding(clerkId: string) {
   const user = await getUserOnboardingStatusByClerkId(clerkId);
 
   return user?.onboardingCompleted ?? false;
-}
-
-export async function finishUserOnboarding(
-  clerkId: string,
-  onboardingData: OnboardingData,
-) {
-  const user = await getUserFromDbByClerkId(clerkId);
-  if (!user) {
-    throw new Error('User not found.');
-  }
-
-  await updateUserOnboardingStatus(user.id, true);
-  await createPeriod({
-    userId: user.id,
-    startDate: onboardingData.lastPeriodDate,
-  });
-  await createUserSettings({
-    userId: user.id,
-    averageCycleLength: onboardingData.cycleLength,
-    averagePeriodLength: onboardingData.periodLength,
-    trackingGoal: onboardingData.trackingGoal,
-  });
 }
 
 export async function fetchUserSettingsByClerkId(clerkId: string) {
@@ -51,10 +70,13 @@ export async function fetchUserSettingsByClerkId(clerkId: string) {
   return user.UserSettings;
 }
 
-export async function updateUserSettingsByClerkId(
-  clerkId: string,
-  data: UserSettingsData,
-) {
+export async function updateUserSettingsByClerkId({
+  clerkId,
+  newSettingsData,
+}: {
+  clerkId: string;
+  newSettingsData: UserSettingsData;
+}) {
   const user = await db.user.findUnique({
     where: { clerkId },
     select: { id: true },
@@ -63,7 +85,7 @@ export async function updateUserSettingsByClerkId(
     throw new Error('User not found.');
   }
 
-  const { userId, ...updateData } = data;
+  const { userId, ...updateData } = newSettingsData;
 
   return await db.userSettings.update({
     where: { userId: user.id },

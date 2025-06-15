@@ -1,9 +1,9 @@
 import { clerkClient } from '@clerk/nextjs/server';
 
-import { createUser, getUserFromDbByClerkId } from '@/lib/actions/user.actions';
+import { createUser, getUserByClerkId } from '@/lib/services/user.service';
 
 export async function syncUser(clerkId: string) {
-  const existingUser = await getUserFromDbByClerkId(clerkId);
+  const existingUser = await getUserByClerkId(clerkId);
   if (existingUser) {
     return { user: existingUser, isNew: false };
   }

@@ -4,7 +4,6 @@ import { useState, useTransition } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { useAuth } from '@clerk/nextjs';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormProvider, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -13,11 +12,11 @@ import { TrackingGoal } from '@/app/generated/prisma';
 import { Button } from '@/components/ui/button';
 import { Card, CardFooter } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { finishUserOnboarding } from '@/lib/actions/user.actions';
 import {
   OnboardingData,
   onboardingSchema,
 } from '@/lib/schemas/onboarding-schema';
-import { finishUserOnboarding } from '@/lib/services/user.service';
 
 import { Step1CycleInfo } from './step1-cycle-info';
 import { Step2LastPeriod } from './step2-last-period';
@@ -33,7 +32,6 @@ const stepsValidation: (keyof OnboardingData)[][] = [
 ];
 
 export function OnboardingForm() {
-  const { userId } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -66,7 +64,7 @@ export function OnboardingForm() {
 
   const onSubmit = (onboardingData: OnboardingData) => {
     startTransition(async () => {
-      await finishUserOnboarding(userId!, {
+      await finishUserOnboarding({
         cycleLength: onboardingData.cycleLength,
         periodLength: onboardingData.periodLength,
         trackingGoal: onboardingData.trackingGoal,
