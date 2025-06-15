@@ -1,16 +1,12 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
-
+import { getAuthenticatedSession } from '@/lib/auth';
 import { PeriodData } from '@/lib/schemas/period-schema';
 import { createPeriodInDb } from '@/lib/services/period.service';
 import { getUserByClerkId } from '@/lib/services/user.service';
 
 export async function createUserPeriod(periodData: PeriodData) {
-  const { userId: clerkId } = await auth();
-  if (!clerkId) {
-    throw new Error('Unauthorized');
-  }
+  const { clerkId } = await getAuthenticatedSession();
 
   const user = await getUserByClerkId(clerkId);
   if (!user) {
