@@ -275,8 +275,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 6.8.2
-   * Query Engine version: 2060c79ba17c6bb9f5823312b6f6b7f4a845738e
+   * Prisma Client JS version: 6.10.1
+   * Query Engine version: 9b628578b3b7cae625e8c927178f15a170e74a9c
    */
   export type PrismaVersion = {
     client: string
@@ -3432,6 +3432,8 @@ export namespace Prisma {
     reminderDaysBefore: number | null
     enableNotifications: boolean | null
     trackingGoal: $Enums.TrackingGoal | null
+    createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type UserSettingsMaxAggregateOutputType = {
@@ -3442,6 +3444,8 @@ export namespace Prisma {
     reminderDaysBefore: number | null
     enableNotifications: boolean | null
     trackingGoal: $Enums.TrackingGoal | null
+    createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type UserSettingsCountAggregateOutputType = {
@@ -3452,6 +3456,8 @@ export namespace Prisma {
     reminderDaysBefore: number
     enableNotifications: number
     trackingGoal: number
+    createdAt: number
+    updatedAt: number
     _all: number
   }
 
@@ -3476,6 +3482,8 @@ export namespace Prisma {
     reminderDaysBefore?: true
     enableNotifications?: true
     trackingGoal?: true
+    createdAt?: true
+    updatedAt?: true
   }
 
   export type UserSettingsMaxAggregateInputType = {
@@ -3486,6 +3494,8 @@ export namespace Prisma {
     reminderDaysBefore?: true
     enableNotifications?: true
     trackingGoal?: true
+    createdAt?: true
+    updatedAt?: true
   }
 
   export type UserSettingsCountAggregateInputType = {
@@ -3496,6 +3506,8 @@ export namespace Prisma {
     reminderDaysBefore?: true
     enableNotifications?: true
     trackingGoal?: true
+    createdAt?: true
+    updatedAt?: true
     _all?: true
   }
 
@@ -3593,6 +3605,8 @@ export namespace Prisma {
     reminderDaysBefore: number
     enableNotifications: boolean
     trackingGoal: $Enums.TrackingGoal
+    createdAt: Date
+    updatedAt: Date
     _count: UserSettingsCountAggregateOutputType | null
     _avg: UserSettingsAvgAggregateOutputType | null
     _sum: UserSettingsSumAggregateOutputType | null
@@ -3622,6 +3636,8 @@ export namespace Prisma {
     reminderDaysBefore?: boolean
     enableNotifications?: boolean
     trackingGoal?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userSettings"]>
 
@@ -3633,6 +3649,8 @@ export namespace Prisma {
     reminderDaysBefore?: boolean
     enableNotifications?: boolean
     trackingGoal?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userSettings"]>
 
@@ -3644,6 +3662,8 @@ export namespace Prisma {
     reminderDaysBefore?: boolean
     enableNotifications?: boolean
     trackingGoal?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userSettings"]>
 
@@ -3655,9 +3675,11 @@ export namespace Prisma {
     reminderDaysBefore?: boolean
     enableNotifications?: boolean
     trackingGoal?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
   }
 
-  export type UserSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "averageCycleLength" | "averagePeriodLength" | "reminderDaysBefore" | "enableNotifications" | "trackingGoal", ExtArgs["result"]["userSettings"]>
+  export type UserSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "averageCycleLength" | "averagePeriodLength" | "reminderDaysBefore" | "enableNotifications" | "trackingGoal" | "createdAt" | "updatedAt", ExtArgs["result"]["userSettings"]>
   export type UserSettingsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -3681,6 +3703,8 @@ export namespace Prisma {
       reminderDaysBefore: number
       enableNotifications: boolean
       trackingGoal: $Enums.TrackingGoal
+      createdAt: Date
+      updatedAt: Date
     }, ExtArgs["result"]["userSettings"]>
     composites: {}
   }
@@ -4112,6 +4136,8 @@ export namespace Prisma {
     readonly reminderDaysBefore: FieldRef<"UserSettings", 'Int'>
     readonly enableNotifications: FieldRef<"UserSettings", 'Boolean'>
     readonly trackingGoal: FieldRef<"UserSettings", 'TrackingGoal'>
+    readonly createdAt: FieldRef<"UserSettings", 'DateTime'>
+    readonly updatedAt: FieldRef<"UserSettings", 'DateTime'>
   }
     
 
@@ -4577,7 +4603,9 @@ export namespace Prisma {
     averagePeriodLength: 'averagePeriodLength',
     reminderDaysBefore: 'reminderDaysBefore',
     enableNotifications: 'enableNotifications',
-    trackingGoal: 'trackingGoal'
+    trackingGoal: 'trackingGoal',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
   };
 
   export type UserSettingsScalarFieldEnum = (typeof UserSettingsScalarFieldEnum)[keyof typeof UserSettingsScalarFieldEnum]
@@ -4872,6 +4900,8 @@ export namespace Prisma {
     reminderDaysBefore?: IntFilter<"UserSettings"> | number
     enableNotifications?: BoolFilter<"UserSettings"> | boolean
     trackingGoal?: EnumTrackingGoalFilter<"UserSettings"> | $Enums.TrackingGoal
+    createdAt?: DateTimeFilter<"UserSettings"> | Date | string
+    updatedAt?: DateTimeFilter<"UserSettings"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
@@ -4883,6 +4913,8 @@ export namespace Prisma {
     reminderDaysBefore?: SortOrder
     enableNotifications?: SortOrder
     trackingGoal?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
   }
 
@@ -4897,6 +4929,8 @@ export namespace Prisma {
     reminderDaysBefore?: IntFilter<"UserSettings"> | number
     enableNotifications?: BoolFilter<"UserSettings"> | boolean
     trackingGoal?: EnumTrackingGoalFilter<"UserSettings"> | $Enums.TrackingGoal
+    createdAt?: DateTimeFilter<"UserSettings"> | Date | string
+    updatedAt?: DateTimeFilter<"UserSettings"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id" | "userId">
 
@@ -4908,6 +4942,8 @@ export namespace Prisma {
     reminderDaysBefore?: SortOrder
     enableNotifications?: SortOrder
     trackingGoal?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     _count?: UserSettingsCountOrderByAggregateInput
     _avg?: UserSettingsAvgOrderByAggregateInput
     _max?: UserSettingsMaxOrderByAggregateInput
@@ -4926,6 +4962,8 @@ export namespace Prisma {
     reminderDaysBefore?: IntWithAggregatesFilter<"UserSettings"> | number
     enableNotifications?: BoolWithAggregatesFilter<"UserSettings"> | boolean
     trackingGoal?: EnumTrackingGoalWithAggregatesFilter<"UserSettings"> | $Enums.TrackingGoal
+    createdAt?: DateTimeWithAggregatesFilter<"UserSettings"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"UserSettings"> | Date | string
   }
 
   export type UserCreateInput = {
@@ -5110,6 +5148,8 @@ export namespace Prisma {
     reminderDaysBefore?: number
     enableNotifications?: boolean
     trackingGoal?: $Enums.TrackingGoal
+    createdAt?: Date | string
+    updatedAt?: Date | string
     user: UserCreateNestedOneWithoutUserSettingsInput
   }
 
@@ -5121,6 +5161,8 @@ export namespace Prisma {
     reminderDaysBefore?: number
     enableNotifications?: boolean
     trackingGoal?: $Enums.TrackingGoal
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type UserSettingsUpdateInput = {
@@ -5130,6 +5172,8 @@ export namespace Prisma {
     reminderDaysBefore?: IntFieldUpdateOperationsInput | number
     enableNotifications?: BoolFieldUpdateOperationsInput | boolean
     trackingGoal?: EnumTrackingGoalFieldUpdateOperationsInput | $Enums.TrackingGoal
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutUserSettingsNestedInput
   }
 
@@ -5141,6 +5185,8 @@ export namespace Prisma {
     reminderDaysBefore?: IntFieldUpdateOperationsInput | number
     enableNotifications?: BoolFieldUpdateOperationsInput | boolean
     trackingGoal?: EnumTrackingGoalFieldUpdateOperationsInput | $Enums.TrackingGoal
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserSettingsCreateManyInput = {
@@ -5151,6 +5197,8 @@ export namespace Prisma {
     reminderDaysBefore?: number
     enableNotifications?: boolean
     trackingGoal?: $Enums.TrackingGoal
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type UserSettingsUpdateManyMutationInput = {
@@ -5160,6 +5208,8 @@ export namespace Prisma {
     reminderDaysBefore?: IntFieldUpdateOperationsInput | number
     enableNotifications?: BoolFieldUpdateOperationsInput | boolean
     trackingGoal?: EnumTrackingGoalFieldUpdateOperationsInput | $Enums.TrackingGoal
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserSettingsUncheckedUpdateManyInput = {
@@ -5170,6 +5220,8 @@ export namespace Prisma {
     reminderDaysBefore?: IntFieldUpdateOperationsInput | number
     enableNotifications?: BoolFieldUpdateOperationsInput | boolean
     trackingGoal?: EnumTrackingGoalFieldUpdateOperationsInput | $Enums.TrackingGoal
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -5482,6 +5534,8 @@ export namespace Prisma {
     reminderDaysBefore?: SortOrder
     enableNotifications?: SortOrder
     trackingGoal?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type UserSettingsAvgOrderByAggregateInput = {
@@ -5498,6 +5552,8 @@ export namespace Prisma {
     reminderDaysBefore?: SortOrder
     enableNotifications?: SortOrder
     trackingGoal?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type UserSettingsMinOrderByAggregateInput = {
@@ -5508,6 +5564,8 @@ export namespace Prisma {
     reminderDaysBefore?: SortOrder
     enableNotifications?: SortOrder
     trackingGoal?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type UserSettingsSumOrderByAggregateInput = {
@@ -5973,6 +6031,8 @@ export namespace Prisma {
     reminderDaysBefore?: number
     enableNotifications?: boolean
     trackingGoal?: $Enums.TrackingGoal
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type UserSettingsUncheckedCreateWithoutUserInput = {
@@ -5982,6 +6042,8 @@ export namespace Prisma {
     reminderDaysBefore?: number
     enableNotifications?: boolean
     trackingGoal?: $Enums.TrackingGoal
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type UserSettingsCreateOrConnectWithoutUserInput = {
@@ -6039,6 +6101,8 @@ export namespace Prisma {
     reminderDaysBefore?: IntFieldUpdateOperationsInput | number
     enableNotifications?: BoolFieldUpdateOperationsInput | boolean
     trackingGoal?: EnumTrackingGoalFieldUpdateOperationsInput | $Enums.TrackingGoal
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserSettingsUncheckedUpdateWithoutUserInput = {
@@ -6048,6 +6112,8 @@ export namespace Prisma {
     reminderDaysBefore?: IntFieldUpdateOperationsInput | number
     enableNotifications?: BoolFieldUpdateOperationsInput | boolean
     trackingGoal?: EnumTrackingGoalFieldUpdateOperationsInput | $Enums.TrackingGoal
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserCreateWithoutPeriodsInput = {
