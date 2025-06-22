@@ -21,8 +21,8 @@ model User {
   firstName           String?
   lastName            String?
   onboardingCompleted Boolean  @default(false)
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  createdAt           DateTime @default(now()) @db.Date
+  updatedAt           DateTime @updatedAt @db.Date
 
   periods      Period[]
   UserSettings UserSettings?
@@ -33,14 +33,14 @@ model User {
 model Period {
   id          String    @id @default(cuid())
   userId      String
-  startDate   DateTime
-  endDate     DateTime?
+  startDate   DateTime  @db.Date
+  endDate     DateTime? @db.Date
   cycleLength Int?
   flow        Flow?
   symptoms    String[]
   notes       String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime  @default(now()) @db.Date
+  updatedAt   DateTime  @updatedAt @db.Date
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -70,6 +70,8 @@ model UserSettings {
   reminderDaysBefore  Int          @default(2)
   enableNotifications Boolean      @default(true)
   trackingGoal        TrackingGoal @default(GENERAL)
+  createdAt           DateTime     @default(now()) @db.Date
+  updatedAt           DateTime     @updatedAt @db.Date
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
