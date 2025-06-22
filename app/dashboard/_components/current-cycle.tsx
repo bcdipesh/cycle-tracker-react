@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 import Link from 'next/link';
 
+import { format } from 'date-fns';
 import { ChevronRight, Cog } from 'lucide-react';
 
 import { Period } from '@/app/generated/prisma';
@@ -19,25 +20,31 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getCurrentPeriodAction } from '@/lib/actions';
-import { dateFormatter } from '@/lib/utils';
+import { correctDate } from '@/lib/utils';
+
+import {
+  calculateCurrentPeriodCycle,
+  predictFertileWindowForNextCycle,
+  predictNextPeriod,
+} from '../_lib/_services/cycle.service';
 
 export function CurrentCycle() {
   const [isLoading, setIsLoading] = useState(true);
   const [period, setPeriod] = useState<Period | null>(null);
-  const MS_PER_DAY = 24 * 60 * 60 * 1000;
-  const today = new Date();
-  const fertileStartDate = new Date(period?.startDate || today);
-  fertileStartDate.setDate(
-    period?.startDate?.getDate() + (period?.cycleLength || 28) - 14 - 2,
-  );
-  const fertileEndDate = new Date(fertileStartDate);
-  fertileEndDate.setDate(fertileStartDate.getDate() + 4);
-  const nextPeriodStartDate = new Date(period?.startDate || today);
-  nextPeriodStartDate.setDate(
-    period?.startDate?.getDate() + (period?.cycleLength || 28),
-  );
-  const nextPeriodEndDate = new Date(nextPeriodStartDate);
-  nextPeriodEndDate.setDate(nextPeriodStartDate.getDate() + 4);
+
+  let nextPeriod = null;
+  if (period?.startDate) {
+    nextPeriod = predictNextPeriod({
+      lastPeriodStartDate: correctDate(period.startDate),
+    });
+  }
+
+  let nextFertileWindow = null;
+  if (period?.startDate) {
+    nextFertileWindow = predictFertileWindowForNextCycle({
+      lastPeriodStartDate: correctDate(period.startDate),
+    });
+  }
 
   useEffect(() => {
     const fetchCycleData = async () => {
@@ -69,11 +76,10 @@ export function CurrentCycle() {
         <CardDescription>
           {isLoading ? (
             <Skeleton className="h-5 w-20" />
+          ) : period?.startDate ? (
+            calculateCurrentPeriodCycle(correctDate(period.startDate))
           ) : (
-            Math.floor(
-              (today.getTime() - (period?.startDate?.getTime() || 0)) /
-                MS_PER_DAY,
-            ) + 1
+            <p className="text-muted-foreground">No data</p>
           )}
         </CardDescription>
       </CardHeader>
@@ -86,32 +92,38 @@ export function CurrentCycle() {
               <p className="font-medium">Last Period</p>
               {isLoading ? (
                 <Skeleton className="h-5 w-20" />
-              ) : (
+              ) : period?.startDate ? (
                 <p className="text-muted-foreground">
-                  {dateFormatter(period?.startDate as Date)}
+                  {format(correctDate(period.startDate), 'MMM dd')}
                 </p>
+              ) : (
+                <p className="text-muted-foreground">No data</p>
               )}
             </div>
             <div>
               <p className="font-medium">Fertile Window</p>
               {isLoading ? (
                 <Skeleton className="h-5 w-20" />
-              ) : (
+              ) : nextFertileWindow ? (
                 <p className="text-muted-foreground">
-                  {dateFormatter(fertileStartDate)} —{' '}
-                  {dateFormatter(fertileEndDate)}
+                  {format(correctDate(nextFertileWindow.startDate), 'MMM dd')} —{' '}
+                  {format(correctDate(nextFertileWindow.endDate), 'MMM dd')}
                 </p>
+              ) : (
+                <p className="text-muted-foreground">No data</p>
               )}
             </div>
             <div>
               <p className="font-medium">Next Period</p>
               {isLoading ? (
                 <Skeleton className="h-5 w-20" />
-              ) : (
+              ) : nextPeriod ? (
                 <p className="text-muted-foreground">
-                  {dateFormatter(nextPeriodStartDate)} —{' '}
-                  {dateFormatter(nextPeriodEndDate)}
+                  {format(correctDate(nextPeriod.startDate), 'MMM dd')} —{' '}
+                  {format(correctDate(nextPeriod.endDate), 'MMM dd')}
                 </p>
+              ) : (
+                <p className="text-muted-foreground">No data</p>
               )}
             </div>
           </div>
